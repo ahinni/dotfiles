@@ -81,3 +81,9 @@ set splitbelow " open sp to the below
 
 map <D-S-Right> gt
 map <D-S-Left> gT
+
+" Misc maps
+map <Leader>sn :tabe ~/.janus/mysnippets/snippets/javascript.snippets<cr>
+map <Leader>so :so %<cr>
+map <Leader>vi :tabe ~/.vimrc.after<CR>
+

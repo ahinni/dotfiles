@@ -1,0 +1,27 @@
+snippet des
+	describe('${1:Context}', function () {
+
+		${2:// before or it}
+	});
+
+snippet bef
+	beforeEach( function () {
+		${1:// body... }
+	});
+
+snippet it
+	it('${1:does}', function (${2:done}) {
+		${3:// body... }
+	});
+
+snippet def
+	define([], function () {
+		var ${1:ClassName} = Backbone.${2:BackboneClass}.extend({
+			initialize: function () {
+			}
+
+			${3}
+		});
+
+		return $1;
+	});

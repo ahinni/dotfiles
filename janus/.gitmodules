@@ -1,0 +1,9 @@
+[submodule "vim-autoclose"]
+	path = vim-autoclose
+	url = https://github.com/Townk/vim-autoclose.git
+[submodule "dustjs"]
+	path = dustjs
+	url = git://github.com/jimmyhchan/dustjs.vim.git
+[submodule "slimux"]
+	path = slimux
+	url = git://github.com/epeli/slimux.git
