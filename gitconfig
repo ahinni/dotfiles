@@ -1,33 +1,46 @@
 [user]
-	name = Ben Orenstein
-	email = ben.orenstein@gmail.com 
-[alias]
-	co = checkout
-        cleanup = !git remote prune origin && git gc && git clean -df && git stash clear
+	name = Aaron Hinni
+	email = aaron@hinnispace.com
+
 [color]
+  ui = auto
 	diff = auto
 	status = auto
 	branch = auto
 
 [color "diff"]
-        meta = yellow 
-
-[core]
-	excludesfile = ~/.gitignore
-	editor = vim --noplugin
-[apply]
-	whitespace = nowarn
+  meta = yellow 
 
 [alias]
-      lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+ st = status
+ co = checkout
+ b = branch
+ lg = log --graph --decorate --relative-date --oneline
+ #llg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+ llg = log --graph --decorate --relative-date --pretty=format:\"%C(yellow)%h %Cblue%ad %C(green)%an%C(cyan)%d%Creset - %s\"
+ cdiff = diff --cached
+ hdiff = diff HEAD^ HEAD
+ h2diff = diff HEAD^2 HEAD
+ cleanup = !git remote prune origin && git gc && git clean -df
+[github]
+  user = ahinni
+[core]
+	autocrlf = input
+	editor = vim
+  whitespace = trailing-space,space-before-tab
+[push]
+	default = simple
+[web]
+  browser = safari_browser
+[browser "safari_browser"]
+  cmd = open -a Safari.app
+
+
 [help]
 	autocorrect = 1
-[branch]
-	autosetupmerge = true
-        autosetuprebase = always
-[push]
-	default = current
-[rerere]
-	enabled = 1
-[github]
-	user = r00k
+# May play with these later
+#[branch]
+	# autosetupmerge = true
+  # autosetuprebase = always
+#[rerere]
+	#enabled = 1
