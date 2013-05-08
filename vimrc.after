@@ -1,0 +1,83 @@
+set visualbell t_vb=
+
+set mouse=a
+
+"color desert
+let g:ctrlp_match_window_reversed = 0
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](\.git|release|node_modules)$',
+  \ 'file': '\v\.(exe|so|dll)$'
+  \ }
+
+let g:AutoClosePairs = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'", '#{': '}', '|':'|' }
+let g:AutoCloseProtectedRegions = ["Character"]
+
+" for dustjs
+let g:NERDCustomDelimiters = { 'dustjs': { 'left': '{!', 'right': '!}' } }
+let g:surround_{char2nr('d')} = "{\r}"
+
+
+" Color scheme from: (http://www.vim.org/scripts/script.php?script_id=1807)
+colorscheme calmar256-dark
+
+" Configure syntastic's javascript linter to look in the same place for the
+" config that we use on the commmand line
+"let g:syntastic_javascript_jsl_conf = "/Users/aaron/Library/Application Support/TextMate/Pristine Copy/Bundles/javascript-tools.tmbundle/Support/conf/jsl.textmate.conf"
+let g:syntastic_javascript_jsl_conf = "/Users/aaron/.jsl.vim.conf"
+
+let mapleader = ","
+nnoremap \ ,
+
+" Jump from insert into normal mode
+inoremap kj <ESC>
+
+" Custom movement commands
+noremap <leader>l $
+noremap <leader>h ^
+
+noremap <leader>o :noh<cr>
+
+" Window Movements
+nnoremap <leader>wl <C-w>l
+nnoremap <leader>wj <C-w>j
+nnoremap <leader>wk <C-w>k
+nnoremap <leader>wh <C-w>h
+nnoremap <leader>wL <C-w>L
+nnoremap <leader>wJ <C-w>J
+nnoremap <leader>wK <C-w>K
+nnoremap <leader>wH <C-w>H
+nnoremap <leader>wr <C-w>k
+
+" Fugitive Bindings prefix -> <leader>g 
+nnoremap <silent> <leader>gs :Gstatus<cr>
+nnoremap <silent> <leader>gd :Gdiff<cr>
+nnoremap <silent> <leader>gc :Gcommit<cr>
+nnoremap <silent> <leader>gw :Gwrite<cr>
+nnoremap <silent> <leader>gr :Gread<cr>
+nnoremap <silent> <leader>gb :Gblame<cr>
+nnoremap <silent> <leader>gl :Glog
+
+au BufRead,BufNewFile *.hjs set filetype=mustache
+
+" Tmux key bindings
+
+nnoremap <leader>r :SlimuxREPLSendLine<CR>
+nnoremap <leader>e vip:SlimuxREPLSendSelection<CR>
+vnoremap <leader>r :SlimuxREPLSendSelection<CR>
+nnoremap <leader>aa :SlimuxShellLast<CR>
+nnoremap <leader>ai :SlimuxShellPrompt<CR>
+
+" Screen or Tmux key fix for arrows
+if &term =~ '^screen'
+  " tmux will send xterm-style keys when xterm-keys is on
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
+endif
+
+set splitright " open vsp to the right
+set splitbelow " open sp to the below
+
+map <D-S-Right> gt
+map <D-S-Left> gT

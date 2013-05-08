@@ -1,0 +1,12 @@
+set lbr
+
+set lines=99999
+set columns=99999
+color ir_black
+map <D-S-Right> gt
+map <D-S-Left> gT
+
+map <D-M-Left> :maca _cycleWindows:<CR>
+map <D-M-Right> :maca _cycleWindowsBackwards:<CR>
+
+let g:ctrlp_switch_buffer = '0'

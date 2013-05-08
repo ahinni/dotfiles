@@ -3,6 +3,9 @@
 ###########
 export EDITOR="vim"
 
+# When using tar on the mac, ignore the extended attributes
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
+
 # Autocorrect mispelled directories
 shopt -s cdspell
 
@@ -17,7 +20,8 @@ stty stop undef
 #  prompt stuff #
 #################
 YELLOW="\[\033[0;33m\]"
-export PS1="=================================================================================================================================================\n\[\033[01;32m\]\u@\h\[\033[01;34m\] \w$YELLOW \$(parse_git_branch) \$\[\033[00m\] "
+#export PS1="=================================================================================================================================================\n\[\033[01;32m\]\u@\h\[\033[01;34m\] \w$YELLOW \$(parse_git_branch) \$\[\033[00m\] "
+export PS1='\[\e[0;35m\]\h:\[\e[0;36m\]\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[m\]$ '
 
 
 #####################
