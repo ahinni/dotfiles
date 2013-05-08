@@ -1,7 +1,7 @@
---type-add
-ruby=.haml,.feature,.scss,.coffee
---ignore-dir=vendor
---ignore-dir=log
---ignore-dir=tmp
---ignore-dir=doc
---ignore-dir=coverage
+--ignore-dir=release
+--ignore-dir=public/js/app
+--ignore-dir=node_modules
+-Glockerdome.js
+--invert-file-match
+--type-add=html=.hjs
+--type-set=css=.sass,.scss
