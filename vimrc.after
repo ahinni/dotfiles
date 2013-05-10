@@ -1,6 +1,8 @@
 set visualbell t_vb=
 
 set mouse=a
+set wildmenu
+set hidden
 
 "color desert
 let g:ctrlp_match_window_reversed = 0
