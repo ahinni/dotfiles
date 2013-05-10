@@ -1,4 +1,5 @@
 --ignore-dir=release
+--ignore-dir=dist
 --ignore-dir=public/js/app
 --ignore-dir=node_modules
 -Glockerdome.js
