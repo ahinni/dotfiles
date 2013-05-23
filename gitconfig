@@ -21,7 +21,7 @@
  cdiff = diff --cached
  hdiff = diff HEAD^ HEAD
  h2diff = diff HEAD^2 HEAD
- cleanup = !git remote prune origin && git gc && git clean -df
+ cleanup = !git remote prune origin && git gc
 [github]
   user = ahinni
 [core]
