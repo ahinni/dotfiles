@@ -2,7 +2,5 @@
 --ignore-dir=dist
 --ignore-dir=public/js/app
 --ignore-dir=node_modules
--Glockerdome.js
---invert-file-match
 --type-add=html=.hjs
 --type-set=css=.sass,.scss
