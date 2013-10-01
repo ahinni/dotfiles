@@ -30,9 +30,6 @@ let g:syntastic_javascript_jsl_conf = "/Users/aaron/.jsl.vim.conf"
 let mapleader = ","
 nnoremap \ ,
 
-" Jump from insert into normal mode
-inoremap kj <ESC>
-
 " Custom movement commands
 noremap <leader>l $
 noremap <leader>h ^
