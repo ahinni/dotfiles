@@ -27,8 +27,8 @@ colorscheme calmar256-dark
 "let g:syntastic_javascript_jsl_conf = "/Users/aaron/Library/Application Support/TextMate/Pristine Copy/Bundles/javascript-tools.tmbundle/Support/conf/jsl.textmate.conf"
 let g:syntastic_javascript_jsl_conf = "/Users/aaron/.jsl.vim.conf"
 
-let mapleader = ","
-nnoremap \ ,
+"let mapleader = ","
+"nnoremap \ ,
 
 " Custom movement commands
 noremap <leader>l $
@@ -86,3 +86,6 @@ map <Leader>sn :tabe ~/.janus/mysnippets/snippets/javascript.snippets<cr>
 map <Leader>so :so %<cr>
 map <Leader>vi :tabe ~/.vimrc.after<CR>
 
+" copy paste macros
+map <Leader>pa :set paste<cr>:r !pbpaste<cr>:set nopaste<cr>
+map <Leader>co :w !pbcopy<cr><cr>
