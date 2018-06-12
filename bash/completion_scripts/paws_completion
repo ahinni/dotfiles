@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+class PawsCompletion
+  def initialize(command, point)
+    @command = command
+    @point = point
+  end
+
+  def matches
+    all_instances.select do |server|
+      server[0, typed.length] == typed
+    end
+  end
+
+  def typed
+    @command.split(' ').last || ''
+  end
+
+  def cache_file
+    File.join(Dir.home, '.dcConfig/.paws_cache')
+  end
+
+  def cache_current?
+    File.exist?(cache_file)
+  end
+
+  def instances_from_cache
+    IO.read(cache_file).split
+  end
+
+  def all_instances
+    cache_current? ? instances_from_cache : generate_instances
+  end
+
+  def generate_instances
+    instances = `paws -l | cut -d ' ' -f2`.split
+    File.open(cache_file, 'w') { |f| f.write instances.join("\n") }
+    instances
+  end
+end
+
+puts PawsCompletion.new(ENV["COMP_LINE"], ENV["COMP_POINT"]).matches
+exit 0
