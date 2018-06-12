@@ -4,6 +4,7 @@ source ~/.bash/completions
 source ~/.bash/paths
 source ~/.bash/config
 source ~/.bash/history_config
+source ~/.dcConfig/settings
 
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
@@ -14,11 +15,14 @@ if [ -f `brew --prefix`/etc/bash_completion ]; then
   . `brew --prefix`/etc/bash_completion
 fi
 
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
+
 # Enable RVM
 [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
 
 # Enable NVM
-[[ -s $HOME/.nvm/nvm.sh ]] && source $HOME/.nvm/nvm.sh
-
-# Source Perrin's bash bookmarks
-[[ -s $HOME/src/bash-bookmarks/bookmarker.sh ]] && source $HOME/src/bash-bookmarks/bookmarker.sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
