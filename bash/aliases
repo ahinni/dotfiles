@@ -72,3 +72,4 @@ alias vi='vim'
 alias w='cd ~/work/voiplink'
 alias wa="grunt watch"
 alias portalstats='ssh marketspace "bin/allstatus.sh"'
+alias json2csv='jq -r '\''(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'\'
