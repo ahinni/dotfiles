@@ -1,3 +1,5 @@
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 source ~/.bash/aliases
 source ~/.bash/functions
 source ~/.bash/completions
@@ -11,13 +13,11 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # Homebrew bash completion scripts. TODO: make sure not conflicting with local ones
-if [ -f `brew --prefix`/etc/bash_completion ]; then
-  . `brew --prefix`/etc/bash_completion
-fi
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
-if [ -f ~/.git-completion.bash ]; then
-  . ~/.git-completion.bash
-fi
+#. /usr/local/etc/bash_completion.d/git-completion.bash
+#. /usr/local/etc/bash_completion.d/git-prompt.sh
+#. /usr/local/etc/bash_completion.d/docker
 
 # Enable RVM
 [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
@@ -35,3 +35,4 @@ export JENV_ROOT=/usr/local/opt/jenv
 eval "$(jenv init -)"
 
 export PATH="/usr/local/opt/python@3.9/libexec/bin:/usr/local/opt/ruby/bin:$PATH"
+. "$HOME/.cargo/env"
