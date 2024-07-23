@@ -66,6 +66,7 @@ alias rc='rails console'
 alias se='grunt server'
 alias so='source ~/.dotfiles/bash/aliases'
 alias te='grunt test:all'
+alias ts='ts "[%Y-%m-%d %H:%M:%.S]"'
 alias u='cd ..'
 alias vack='vi ~/.ackrc'
 alias vi='vim'
@@ -73,3 +74,6 @@ alias w='cd ~/work/voiplink'
 alias wa="grunt watch"
 alias portalstats='ssh marketspace "bin/allstatus.sh"'
 alias json2csv='jq -r '\''(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'\'
+
+alias k=kubectl
+alias docker-aws-login='aws --profile=nuso ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 651085182073.dkr.ecr.us-east-2.amazonaws.com'

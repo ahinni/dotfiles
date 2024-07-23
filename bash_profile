@@ -1,18 +1,26 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+if [ -f ~/.git-prompt.sh ]; then
+  source ~/.git-prompt.sh
+fi
+if [ -f ~/.git-completion.bash ]; then
+  source ~/.git-completion.bash
+fi
+
 source ~/.bash/aliases
 source ~/.bash/functions
 source ~/.bash/completions
 source ~/.bash/paths
 source ~/.bash/config
 source ~/.bash/history_config
-source ~/.dcConfig/settings
+# source ~/.dcConfig/settings
 
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
 
-# Homebrew bash completion scripts. TODO: make sure not conflicting with local ones
+
+# Covers old homebrew bash-completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
 #. /usr/local/etc/bash_completion.d/git-completion.bash
@@ -30,9 +38,18 @@ if [ -z $NVM_DIR ]; then
 fi
 
 # Enable jenv
-export PATH="$HOME/.jenv/bin:$PATH"
-export JENV_ROOT=/usr/local/opt/jenv
-eval "$(jenv init -)"
+if [ -f ~/.jenv/bin/jenv ]; then
+	export PATH="$HOME/.jenv/bin:$PATH"
+	export JENV_ROOT=/usr/local/opt/jenv
+	eval "$(jenv init -)"
+fi
 
 export PATH="/usr/local/opt/python@3.9/libexec/bin:/usr/local/opt/ruby/bin:$PATH"
-. "$HOME/.cargo/env"
+if [ -f ~/.cargo/env ]; then
+	. "$HOME/.cargo/env"
+fi
+export PATH="/opt/homebrew/bin:$PATH"
+
+# Homebrew bash completion scripts. TODO: make sure not conflicting with local ones
+[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"

@@ -54,11 +54,11 @@ stty stop undef
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git rvm)
 
-source $ZSH/oh-my-zsh.sh
+#source $ZSH/oh-my-zsh.sh
 
 # Source my custom files after oh-my-zsh so I can override things.
-source $HOME/.dotfiles/zsh/aliases
-source $HOME/.dotfiles/zsh/functions
+#source $HOME/.dotfiles/zsh/aliases
+#source $HOME/.dotfiles/zsh/functions
 
 # Customize to your needs...
 export PATH="./node_modules/.bin:~/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/local/sbin:/usr/local/lib/ruby/gems/3.0.0/bin:/usr/local/opt/curl/bin:$PATH"
