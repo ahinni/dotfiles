@@ -27,7 +27,7 @@ Establish proper management of the `~/.config` directory and its subdirectories 
 
 ### Current Editor Inconsistency Issues
 - ✅ `alias vi='nvim'` - Correctly redirects vi to nvim
-- ❌ `alias ali='vim ~/.dotfiles/bash/aliases'` - Uses vim directly
+- ❌ `alias ali='vim ~/.dotfiles/home/bash/aliases'` - Uses vim directly
 - ❌ `alias no='vim ~/Dropbox/aaron/notes.txt'` - Uses vim directly
 - ❌ `alias todo='vim ~/Dropbox/aaron/todo.txt'` - Uses vim directly
 - ❌ `alias vack='vi ~/.ackrc'` - Uses vi (which redirects to nvim, but inconsistent)
@@ -47,8 +47,8 @@ Establish proper management of the `~/.config` directory and its subdirectories 
 ### Our Approach:
 ```
 ~/.config/                    # Standard directory (may or may not exist)
-├── nvim/ -> ~/.dotfiles/config/nvim/     # OUR symlink
-├── gh/ -> ~/.dotfiles/config/gh/         # OUR symlink
+├── nvim/ -> ~/.dotfiles/home/config/nvim/     # OUR symlink
+├── gh/ -> ~/.dotfiles/home/config/gh/         # OUR symlink
 ├── configstore/              # Leave alone (npm/yarn)
 ├── op/                       # Leave alone (1Password)
 ├── iterm2/                   # Leave alone (just symlinks anyway)
@@ -77,9 +77,9 @@ Establish proper management of the `~/.config` directory and its subdirectories 
 - [ ] Create rollback plan if anything goes wrong
 
 ### Task 0.2: Setup Safe .config Structure in Dotfiles
-- [ ] Create `config/` directory in dotfiles root
-- [ ] **COPY** (don't move yet) `~/.config/nvim/` to `dotfiles/config/nvim/`
-- [ ] **COPY** (don't move yet) `~/.config/gh/` to `dotfiles/config/gh/`
+- [ ] Create `home/config/` directory in dotfiles root
+- [ ] **COPY** (don't move yet) `~/.config/nvim/` to `home/config/nvim/`
+- [ ] **COPY** (don't move yet) `~/.config/gh/` to `home/config/gh/`
 - [ ] Verify copied configs work independently
 - [ ] Test nvim with copied config before linking
 
@@ -114,11 +114,12 @@ Establish proper management of the `~/.config` directory and its subdirectories 
 
 ```
 dotfiles/
-├── config/
-│   ├── nvim/           # Neovim configuration (copied from ~/.config/nvim/)
-│   └── gh/             # GitHub CLI config (copied from ~/.config/gh/)
-├── bash/
-├── zsh/
+├── home/
+│   ├── config/
+│   │   ├── nvim/           # Neovim configuration (copied from ~/.config/nvim/)
+│   │   └── gh/             # GitHub CLI config (copied from ~/.config/gh/)
+│   ├── bash/
+│   └── zsh/
 ├── .gitignore          # Updated to exclude sensitive configs
 └── install.sh          # Updated with safe config linking
 ```
@@ -127,8 +128,8 @@ dotfiles/
 
 ```gitignore
 # Sensitive .config directories (never commit these)
-config/op/
-config/configstore/
+home/config/op/
+home/config/configstore/
 
 # Backup files
 *.backup.*
@@ -148,7 +149,7 @@ config/configstore/
 # Function to safely link individual .config subdirectories
 link_config_dir() {
   local config_dir=$1
-  local source_path="$DOTFILES_DIR/config/$config_dir"
+  local source_path="$DOTFILES_DIR/home/config/$config_dir"
   local target_path="$HOME/.config/$config_dir"
 
   # Ensure source exists
@@ -234,7 +235,7 @@ alias vim='nvim'
 alias edit='nvim'
 
 # Update existing aliases to use $EDITOR
-alias ali='$EDITOR ~/.dotfiles/bash/aliases'
+alias ali='$EDITOR ~/.dotfiles/home/bash/aliases'
 alias no='$EDITOR ~/Dropbox/aaron/notes.txt'
 alias todo='$EDITOR ~/Dropbox/aaron/todo.txt'
 ```
@@ -256,23 +257,23 @@ find ~/.config -type f > ~/.config.inventory.$(date +%Y%m%d_%H%M%S)
 ### Step 2: Setup Dotfiles Structure (COPY, don't move)
 ```bash
 # Create config directory in dotfiles
-mkdir -p ~/.dotfiles/config
+mkdir -p ~/.dotfiles/home/config
 
 # COPY (don't move) nvim config
-cp -r ~/.config/nvim ~/.dotfiles/config/nvim
+cp -r ~/.config/nvim ~/.dotfiles/home/config/nvim
 
 # COPY (don't move) gh config
-cp -r ~/.config/gh ~/.dotfiles/config/gh
+cp -r ~/.config/gh ~/.dotfiles/home/config/gh
 
 # Verify copies are complete
-diff -r ~/.config/nvim ~/.dotfiles/config/nvim
-diff -r ~/.config/gh ~/.dotfiles/config/gh
+diff -r ~/.config/nvim ~/.dotfiles/home/config/nvim
+diff -r ~/.config/gh ~/.dotfiles/home/config/gh
 ```
 
 ### Step 3: Test Copied Configs Work
 ```bash
 # Test nvim with copied config (temporarily)
-NVIM_APPNAME=test-nvim cp -r ~/.dotfiles/config/nvim ~/.config/test-nvim
+NVIM_APPNAME=test-nvim cp -r ~/.dotfiles/home/config/nvim ~/.config/test-nvim
 nvim --cmd "set runtimepath^=~/.config/test-nvim" +q
 rm -rf ~/.config/test-nvim
 ```
@@ -379,7 +380,7 @@ nvim +q  # Should work as before
 gh --version  # Should work as before
 
 # Remove problematic dotfiles changes
-rm -rf ~/.dotfiles/config
+rm -rf ~/.dotfiles/home/config
 git checkout HEAD -- install.sh  # If modified
 ```
 

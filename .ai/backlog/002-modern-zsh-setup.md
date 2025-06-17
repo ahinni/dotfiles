@@ -22,8 +22,8 @@ Create a modern, performant zsh configuration that leverages the cleaned bash co
 - **Mixed PATH**: Duplicated and conflicting PATH management
 
 ### 3. Outdated zsh Files
-- **zsh/aliases**: Outdated, points to old projects
-- **zsh/functions**: Subset of bash functions, missing recent additions
+- **home/zsh/aliases**: Outdated, points to old projects
+- **home/zsh/functions**: Subset of bash functions, missing recent additions
 - **Missing modern zsh features**: No syntax highlighting, autosuggestions, etc.
 
 ## Modern Zsh Approach
@@ -31,7 +31,7 @@ Create a modern, performant zsh configuration that leverages the cleaned bash co
 ### Replace Oh-My-Zsh with Modern Stack
 1. **Starship Prompt**: Fast, customizable, cross-shell prompt
 2. **Zinit Plugin Manager**: Fast, feature-rich plugin management
-3. **Essential Plugins**: 
+3. **Essential Plugins**:
    - `zsh-autosuggestions`: Fish-like autosuggestions
    - `zsh-syntax-highlighting`: Syntax highlighting
    - `zsh-completions`: Additional completions
@@ -51,7 +51,7 @@ Create a modern, performant zsh configuration that leverages the cleaned bash co
 - [ ] Install zinit (plugin manager)
 - [ ] Configure Starship with custom config
 
-### Task 2.3: Create Modern zshrc
+### Task 2.3: Create Modern home/zshrc
 - [ ] Create clean, modular zshrc structure
 - [ ] Set up zinit plugin management
 - [ ] Configure essential plugins
@@ -59,8 +59,8 @@ Create a modern, performant zsh configuration that leverages the cleaned bash co
 - [ ] Add zsh-specific optimizations
 
 ### Task 2.4: Port and Enhance Configurations
-- [ ] Port cleaned bash/aliases to zsh/aliases
-- [ ] Port cleaned bash/functions to zsh/functions
+- [ ] Port cleaned home/bash/aliases to home/zsh/aliases
+- [ ] Port cleaned home/bash/functions to home/zsh/functions
 - [ ] Add zsh-specific completions
 - [ ] Configure zsh history settings
 - [ ] Set up zsh options for better UX
@@ -81,17 +81,18 @@ Create a modern, performant zsh configuration that leverages the cleaned bash co
 ## Proposed File Structure
 
 ```
-zsh/
-├── zshrc                 # Main zsh configuration
-├── aliases              # Ported and enhanced aliases
-├── functions            # Ported and enhanced functions
-├── completions          # Zsh-specific completions
-├── config               # Zsh options and settings
-├── plugins              # Plugin configurations
-└── starship.toml        # Starship prompt configuration
+home/
+├── zshrc                # Main zsh configuration
+└── zsh/
+    ├── aliases              # Ported and enhanced aliases
+    ├── functions            # Ported and enhanced functions
+    ├── completions          # Zsh-specific completions
+    ├── config               # Zsh options and settings
+    ├── plugins              # Plugin configurations
+    └── starship.toml        # Starship prompt configuration
 ```
 
-## Modern zshrc Structure
+## Modern home/zshrc Structure
 
 ```bash
 # Performance: Start timing

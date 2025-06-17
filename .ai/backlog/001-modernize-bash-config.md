@@ -14,7 +14,7 @@ Clean up and modernize the existing bash configuration to remove outdated elemen
 
 ### 2. bash/aliases Issues
 - **Duplicate entries**: Lines 50-67 duplicate earlier aliases
-- **Outdated references**: 
+- **Outdated references**:
   - `bpr` points to old GitHub repo (`sotelsys/voiplink`)
   - Work directory aliases point to old projects
   - `ali` alias points to bash aliases but should be generic
@@ -38,7 +38,7 @@ Clean up and modernize the existing bash configuration to remove outdated elemen
 
 ## Tasks
 
-### Task 1.1: Audit and Clean bash/aliases
+### Task 1.1: Audit and Clean home/bash/aliases
 - [ ] Remove duplicate aliases (lines 50-67)
 - [ ] Update outdated repository references
 - [ ] Standardize on single editor (nvim vs vim)
@@ -46,7 +46,7 @@ Clean up and modernize the existing bash configuration to remove outdated elemen
 - [ ] Group related aliases together
 - [ ] Add comments for alias groups
 
-### Task 1.2: Modernize bash/functions
+### Task 1.2: Modernize home/bash/functions
 - [ ] Remove Linux package manager functions (`sagi`, `syi`)
 - [ ] Simplify or remove complex git workflow functions
 - [ ] Update `cdgem` function for modern gem management
@@ -55,27 +55,27 @@ Clean up and modernize the existing bash configuration to remove outdated elemen
 - [ ] Document complex functions
 
 ### Task 1.3: Consolidate PATH Management
-- [ ] Create single `bash/paths` file with all PATH modifications
+- [ ] Create single `home/bash/paths` file with all PATH modifications
 - [ ] Remove hardcoded version numbers
 - [ ] Use dynamic path detection where possible
-- [ ] Remove duplicate PATH entries from bash_profile
+- [ ] Remove duplicate PATH entries from home/bash_profile
 - [ ] Order paths by priority (local bins first)
 
-### Task 1.4: Simplify bash_profile
+### Task 1.4: Simplify home/bash_profile
 - [ ] Remove duplicate bash completion loading
 - [ ] Consolidate tool initialization (NVM, RVM, jenv)
 - [ ] Remove commented dead code
 - [ ] Add conditional loading for optional tools
 - [ ] Improve error handling for missing tools
 
-### Task 1.5: Modernize bash/config
+### Task 1.5: Modernize home/bash/config
 - [ ] Simplify SSH agent management (use system keychain)
 - [ ] Update prompt configuration
 - [ ] Remove screen-specific configurations
 - [ ] Add modern shell options
 - [ ] Improve color configuration
 
-### Task 1.6: Create bash/history_config
+### Task 1.6: Create home/bash/history_config
 - [ ] Review current history configuration
 - [ ] Add modern history options
 - [ ] Ensure history is properly preserved
@@ -85,16 +85,18 @@ Clean up and modernize the existing bash configuration to remove outdated elemen
 
 ### File Structure After Cleanup
 ```
-bash/
-├── aliases          # Clean, organized aliases
-├── functions        # Modern, tested functions  
-├── config          # Shell options and prompt
-├── paths           # Consolidated PATH management
-├── history_config  # History configuration
-└── completions     # Completion scripts
+home/
+├── bash_profile     # Clean, minimal file that sources modular configs
+└── bash/
+    ├── aliases          # Clean, organized aliases
+    ├── functions        # Modern, tested functions
+    ├── config          # Shell options and prompt
+    ├── paths           # Consolidated PATH management
+    ├── history_config  # History configuration
+    └── completions     # Completion scripts
 ```
 
-### bash_profile After Cleanup
+### home/bash_profile After Cleanup
 - Clean, minimal file that sources modular configs
 - Conditional loading of optional tools
 - No hardcoded paths or versions

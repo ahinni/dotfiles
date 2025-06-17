@@ -40,7 +40,7 @@ dotfiles/
 ├── .gitignore                   # Project config
 ├── .ai/                         # Task management
 │   └── backlog/
-├── dotfiles/                    # ALL DOTFILES HERE ⭐
+├── home/                        # ALL DOTFILES HERE ⭐
 │   ├── bash_profile
 │   ├── bash_logout
 │   ├── zshrc
@@ -91,14 +91,14 @@ dotfiles/
 ### 2. Simplified install.sh
 ```bash
 # Clean and simple - no ignore logic needed!
-for file in dotfiles/*; do
+for file in home/*; do
   filename=$(basename "$file")
-  link_file "dotfiles/$filename" "$filename"
+  link_file "home/$filename" "$filename"
 done
 ```
 
 ### 3. Easy Maintenance
-- ✅ Add new dotfile? Just put it in `dotfiles/`
+- ✅ Add new dotfile? Just put it in `home/`
 - ✅ No more growing ignore list
 - ✅ Clear what's active vs archived
 - ✅ Easy to understand structure
@@ -116,7 +116,7 @@ done
 - [ ] Plan file movements
 
 ### Task 0.2: Move Active Dotfiles
-- [ ] Move all current dotfiles to `dotfiles/` subdirectory
+- [ ] Move all current dotfiles to `home/` subdirectory
 - [ ] Preserve directory structure (bash/, zsh/, config/)
 - [ ] Update any internal path references
 
@@ -129,7 +129,7 @@ done
 ### Task 0.4: Update install.sh
 - [ ] Simplify installation logic
 - [ ] Remove complex ignore list
-- [ ] Update paths to use `dotfiles/` subdirectory
+- [ ] Update paths to use `home/` subdirectory
 - [ ] Add config/ subdirectory handling
 
 ### Task 0.5: Update Documentation
@@ -153,17 +153,17 @@ done
 cp -r ~/.dotfiles ~/.dotfiles.backup.$(date +%Y%m%d_%H%M%S)
 
 # 2. Create new directories
-mkdir -p ~/.dotfiles/dotfiles
+mkdir -p ~/.dotfiles/home
 mkdir -p ~/.dotfiles/archive
 
 # 3. Move active dotfiles
-mv ~/.dotfiles/bash_profile ~/.dotfiles/dotfiles/
-mv ~/.dotfiles/gitconfig ~/.dotfiles/dotfiles/
+mv ~/.dotfiles/bash_profile ~/.dotfiles/home/
+mv ~/.dotfiles/gitconfig ~/.dotfiles/home/
 # ... etc for all active dotfiles
 
 # 4. Move directories
-mv ~/.dotfiles/bash ~/.dotfiles/dotfiles/
-mv ~/.dotfiles/zsh ~/.dotfiles/dotfiles/
+mv ~/.dotfiles/bash ~/.dotfiles/home/
+mv ~/.dotfiles/zsh ~/.dotfiles/home/
 
 # 5. Archive old configs
 mv ~/.dotfiles/oh-my-zsh ~/.dotfiles/archive/
