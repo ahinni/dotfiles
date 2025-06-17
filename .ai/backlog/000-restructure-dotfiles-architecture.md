@@ -111,37 +111,37 @@ done
 ## Migration Tasks
 
 ### Task 0.1: Create New Structure
-- [ ] Create `dotfiles/` directory
-- [ ] Create `archive/` directory
-- [ ] Plan file movements
+- [x] Create `home/` directory
+- [x] Create `archive/` directory
+- [x] Plan file movements
 
 ### Task 0.2: Move Active Dotfiles
-- [ ] Move all current dotfiles to `home/` subdirectory
-- [ ] Preserve directory structure (bash/, zsh/, config/)
-- [ ] Update any internal path references
+- [x] Move all current dotfiles to `home/` subdirectory
+- [x] Preserve directory structure (bash/, zsh/, config/)
+- [x] Update any internal path references
 
 ### Task 0.3: Archive Old Configurations
-- [ ] Move `oh-my-zsh/` to `archive/oh-my-zsh/`
-- [ ] Move `janus/` to `archive/janus/`
-- [ ] Move `vim.ignore/` to `archive/vim.ignore/`
-- [ ] Move `vimrc.ignore` to `archive/vimrc.ignore`
+- [x] Move `oh-my-zsh/` to `archive/oh-my-zsh/`
+- [x] Move `janus/` to `archive/janus/`
+- [x] Move `vim.ignore/` to `archive/vim.ignore/`
+- [x] Move `vimrc.ignore` to `archive/vimrc.ignore`
 
 ### Task 0.4: Update install.sh
-- [ ] Simplify installation logic
-- [ ] Remove complex ignore list
-- [ ] Update paths to use `home/` subdirectory
-- [ ] Add config/ subdirectory handling
+- [x] Simplify installation logic
+- [x] Remove complex ignore list
+- [x] Update paths to use `home/` subdirectory
+- [x] Add config/ subdirectory handling
 
 ### Task 0.5: Update Documentation
-- [ ] Update README.md with new structure
-- [ ] Document migration process
-- [ ] Update any references to old paths
+- [x] Update README.md with new structure
+- [x] Document migration process
+- [x] Update any references to old paths
 
 ### Task 0.6: Test and Verify
-- [ ] Backup current symlinks
-- [ ] Test new installation process
-- [ ] Verify all dotfiles link correctly
-- [ ] Test that archived files are ignored
+- [x] Backup current symlinks
+- [x] Test new installation process
+- [x] Verify all dotfiles link correctly
+- [x] Test that archived files are ignored
 
 ## Migration Script Outline
 
