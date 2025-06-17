@@ -67,3 +67,52 @@ function g {
 }
 
 function kc () { [ -n "$1" ] && kubectl config use-context $1; kubectl config get-contexts; }
+
+function kubeshell() { if [ -z $1 ]; then echo "Usage: kubeshell <app-name> [context] [namespace]"; else ctxopts=${2:+--context $2}; nsopts=${3:+-n $3}; pod=$(kubectl $ctxopts $nsopts get pod -l app.kubernetes.io/name=$1 -o name | head -1); kubectl $ctxopts $nsopts exec -it $pod -- bash; fi; }
+
+function dbpass () {
+  if [[ $# -lt 1 ]]; then
+    echo "Usage: ${FUNCNAME[0]} <env> [user] [region]"
+    echo
+    echo "  env     - Environment name (e.g., dev, prod)"
+    echo "  user    - Optional. One of: marketspace (default), recording, sidewinder"
+    echo "  region  - Optional. One of: us1 (default), eu1"
+    echo
+    echo "Examples:"
+    echo "  ${FUNCNAME[0]} dev"
+    echo "  ${FUNCNAME[0]} prod recording"
+    echo "  ${FUNCNAME[0]} dev sidewinder eu1"
+    return 1
+  fi
+
+  local env="$1"
+  local user="${2:-marketspace}"
+  local region_code="${3:-us1}"
+
+  # Determine AWS region
+  local region
+  if [[ "$region_code" == "us1" && "$env" == "prod" ]]; then
+    region="us-east-2"
+  else
+    case "$region_code" in
+      us1) region="us-west-2" ;;
+      eu1) region="eu-central-1" ;;
+      *) echo "Unsupported region code: $region_code" >&2; return 1 ;;
+    esac
+  fi
+
+  # Determine secret key
+  local secret_key
+  case "$user" in
+    marketspace) secret_key="MARKETSPACE_DB_PASSWORD" ;;
+    recording) secret_key="RECORDING_DB_PASSWORD" ;;
+    sidewinder) secret_key="SIDEWINDER_DB_PASSWORD" ;;
+    *) echo "Unsupported user: $user" >&2; return 1 ;;
+  esac
+
+  aws --profile nuso --region "$region" secretsmanager get-secret-value \
+    --secret-id "marketspace-${env}-portal-api-settings" \
+    --query SecretString --output text | \
+    jq -r --arg key "$secret_key" '.[$key]'
+}
+

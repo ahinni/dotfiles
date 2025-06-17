@@ -53,3 +53,6 @@ export PATH="/opt/homebrew/bin:$PATH"
 # Homebrew bash completion scripts. TODO: make sure not conflicting with local ones
 [[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
 export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"
+export PATH="$PATH:/Users/aaron/.modular/bin"
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
