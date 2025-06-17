@@ -25,7 +25,8 @@ install_dotfiles() {
     # Skip certain files
     if [[ "$file" == "Rakefile" || "$file" == "README.md" || "$file" == "LICENSE" ||
           "$file" == "id_dsa.pub" || "$file" == "install.sh" ||
-          "$file" == "Dockerfile.test" || "$file" == "test-dotfiles.sh" ]]; then
+          "$file" == "Dockerfile.test" || "$file" == "test-dotfiles.sh" ||
+          "$file" == ".ai" ]]; then
       continue
     fi
 
