@@ -1,0 +1,29 @@
+# Dockerfile for testing dotfiles installation
+FROM ubuntu:22.04
+
+# Install basic tools that might be needed
+RUN apt-get update && apt-get install -y \
+    bash \
+    zsh \
+    git \
+    vim \
+    tmux \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a test user (similar to a real user environment)
+RUN useradd -m -s /bin/bash testuser
+
+# Switch to test user
+USER testuser
+WORKDIR /home/testuser
+
+# Copy dotfiles into the container
+COPY --chown=testuser:testuser . /home/testuser/dotfiles
+
+# Set working directory to dotfiles
+WORKDIR /home/testuser/dotfiles
+
+# Default command to run bash (so you can interactively test)
+CMD ["/bin/bash"]
