@@ -1,58 +1,76 @@
+# =============================================================================
+# Bash Profile - Main Configuration Entry Point
+# =============================================================================
+
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
-if [ -f ~/.git-prompt.sh ]; then
-  source ~/.git-prompt.sh
-fi
-if [ -f ~/.git-completion.bash ]; then
-  source ~/.git-completion.bash
-fi
+# =============================================================================
+# Load Modular Configuration Files
+# =============================================================================
 
-source ~/.bash/aliases
-source ~/.bash/functions
-source ~/.bash/completions
-source ~/.bash/paths
-source ~/.bash/config
-source ~/.bash/history_config
-# source ~/.dcConfig/settings
+# Load bash configuration modules
+[[ -f ~/.bash/paths ]] && source ~/.bash/paths
+[[ -f ~/.bash/config ]] && source ~/.bash/config
+[[ -f ~/.bash/history_config ]] && source ~/.bash/history_config
+[[ -f ~/.bash/aliases ]] && source ~/.bash/aliases
+[[ -f ~/.bash/functions ]] && source ~/.bash/functions
+[[ -f ~/.bash/completions ]] && source ~/.bash/completions
 
-if [ -f ~/.bashrc ]; then
-  . ~/.bashrc
-fi
+# Load system bashrc if it exists
+[[ -f ~/.bashrc ]] && source ~/.bashrc
 
+# =============================================================================
+# Git Integration
+# =============================================================================
 
-# Covers old homebrew bash-completion
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+[[ -f ~/.git-prompt.sh ]] && source ~/.git-prompt.sh
+[[ -f ~/.git-completion.bash ]] && source ~/.git-completion.bash
 
-#. /usr/local/etc/bash_completion.d/git-completion.bash
-#. /usr/local/etc/bash_completion.d/git-prompt.sh
-#. /usr/local/etc/bash_completion.d/docker
+# =============================================================================
+# Bash Completion (Homebrew)
+# =============================================================================
 
-# Enable RVM
-[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
-
-# Enable NVM if not already enabled
-if [ -z $NVM_DIR ]; then
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# Load bash completion (prefer Apple Silicon path, fallback to Intel)
+if [[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]]; then
+  source "/opt/homebrew/etc/profile.d/bash_completion.sh"
+elif [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]]; then
+  source "/usr/local/etc/profile.d/bash_completion.sh"
 fi
 
-# Enable jenv
-if [ -f ~/.jenv/bin/jenv ]; then
-	export PATH="$HOME/.jenv/bin:$PATH"
-	export JENV_ROOT=/usr/local/opt/jenv
-	eval "$(jenv init -)"
+# =============================================================================
+# Development Environment Tools
+# =============================================================================
+
+# Enable RVM (Ruby Version Manager)
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
+# Enable NVM (Node Version Manager)
+if [[ -z "$NVM_DIR" ]]; then
+  export NVM_DIR="$HOME/.nvm"
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+  [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
 fi
 
-export PATH="/usr/local/opt/python@3.9/libexec/bin:/usr/local/opt/ruby/bin:$PATH"
-if [ -f ~/.cargo/env ]; then
-	. "$HOME/.cargo/env"
+# Enable jenv (Java Environment Manager)
+if [[ -f ~/.jenv/bin/jenv ]]; then
+  export PATH="$HOME/.jenv/bin:$PATH"
+  export JENV_ROOT=/usr/local/opt/jenv
+  eval "$(jenv init -)"
 fi
-export PATH="/opt/homebrew/bin:$PATH"
 
-# Homebrew bash completion scripts. TODO: make sure not conflicting with local ones
-[[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
-export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"
-export PATH="$PATH:/Users/aaron/.modular/bin"
+# Enable Rust/Cargo environment
+[[ -f ~/.cargo/env ]] && source "$HOME/.cargo/env"
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# =============================================================================
+# Additional Tool Paths (Dynamic Detection)
+# =============================================================================
+
+# Modular AI (if installed)
+[[ -d "$HOME/.modular/bin" ]] && export PATH="$PATH:$HOME/.modular/bin"
+
+# =============================================================================
+# Terminal Integration
+# =============================================================================
+
+# iTerm2 shell integration
+[[ -e "${HOME}/.iterm2_shell_integration.bash" ]] && source "${HOME}/.iterm2_shell_integration.bash"

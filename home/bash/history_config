@@ -1,11 +1,22 @@
-# Gimme a huge history
+# =============================================================================
+# History Configuration
+# =============================================================================
+
+# Large history size for better command recall
 export HISTSIZE=50000
+export HISTFILESIZE=100000
 
-# Don't store duplicate lines in history
-export HISTCONTROL=ignoreboth
+# Don't store duplicate lines or lines starting with space
+export HISTCONTROL=ignoreboth:erasedups
 
-# Apend to history instead of overwriting
+# Append to history instead of overwriting (also set in config)
 shopt -s histappend
 
-# Unify histories across screen sessions
-PROMPT_COMMAND="$PROMPT_COMMAND;history -a; history -n"
+# Include timestamps in history
+export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "
+
+# Ignore common commands to reduce clutter
+export HISTIGNORE="ls:ll:la:cd:pwd:exit:clear:history"
+
+# Unify histories across terminal sessions
+PROMPT_COMMAND="history -a; history -c; history -r${PROMPT_COMMAND:+; $PROMPT_COMMAND}"

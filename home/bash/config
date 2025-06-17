@@ -1,53 +1,53 @@
-###########
-# general #
-###########
-export EDITOR="vim"
+# =============================================================================
+# General Configuration
+# =============================================================================
+
+export EDITOR="nvim"
 
 # When using tar on the mac, ignore the extended attributes
 export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
 
-# Autocorrect mispelled directories
+# Autocorrect misspelled directories
 shopt -s cdspell
 
-# Set this so screen will show the currently-running program
-PROMPT_COMMAND='echo -ne "\033k\033\\"'
+# Enable extended globbing
+shopt -s extglob
+
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob
+
+# Append to the Bash history file, rather than overwriting it
+shopt -s histappend
 
 # Disable flow control commands (keeps C-s from freezing everything)
 stty start undef
 stty stop undef
 
-#################
-#  prompt stuff #
-#################
-YELLOW="\[\033[0;33m\]"
-#export PS1="=================================================================================================================================================\n\[\033[01;32m\]\u@\h\[\033[01;34m\] \w$YELLOW \$(parse_git_branch) \$\[\033[00m\] "
-#export PS1='\[\e[0;35m\]\h:\[\e[0;36m\]\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[m\]$ '
-export PS1='\[\e[0;35m\]$(scutil --get ComputerName):\[\e[0;36m\]\w\[\e[0;32m\]$(__git_ps1 " [%s]")\[\e[m\]$ '
+# =============================================================================
+# Prompt Configuration
+# =============================================================================
 
+# Colors for prompt
+YELLOW="\[\033[0;33m\]"
+PURPLE="\[\e[0;35m\]"
+CYAN="\[\e[0;36m\]"
+GREEN="\[\e[0;32m\]"
+RESET="\[\e[m\]"
+
+# Set prompt: hostname:path [git-branch]$
+export PS1="${PURPLE}\h:${CYAN}\w${GREEN}\$(__git_ps1 \" [%s]\")${RESET}\$ "
+
+# Colors for ls command
 export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
 
 
-#####################
-#  ssh-agent stuff  #
-#####################
-# get the ssh agent started
-SSH_ENV="$HOME/.ssh/environment"
+# =============================================================================
+# SSH Configuration
+# =============================================================================
 
-function start_agent {
-	echo "Initialising new SSH agent..."
-	/usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-	echo succeeded
-	chmod 600 "${SSH_ENV}"
-	. "${SSH_ENV}" > /dev/null
-	/usr/bin/ssh-add;
-}
-
-# Source SSH settings, if applicable
-if [ -f "${SSH_ENV}" ]; then
-	. "${SSH_ENV}" > /dev/null
-	ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-	start_agent;
-	}
-else
-	start_agent;
-fi 
+# Use macOS keychain for SSH keys (modern approach)
+# This replaces the complex SSH agent management with system keychain integration
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Add SSH keys to keychain on macOS
+  ssh-add --apple-load-keychain 2>/dev/null
+fi
