@@ -1,0 +1,51 @@
+# =============================================================================
+# Zsh History Configuration
+# =============================================================================
+
+# History file location
+export HISTFILE=~/.zsh_history
+
+# Large history size for better command recall
+export HISTSIZE=50000
+export SAVEHIST=100000
+
+# Don't store duplicate lines or lines starting with space
+# (This is handled by zsh options in config, but keeping for compatibility)
+export HISTCONTROL=ignoreboth:erasedups
+
+# Ignore common commands to reduce clutter
+export HISTIGNORE="ls:ll:la:cd:pwd:exit:clear:history:z"
+
+# =============================================================================
+# Zsh-Specific History Features
+# =============================================================================
+
+# History expansion
+setopt BANG_HIST            # Enable ! history expansion
+setopt HIST_EXPAND          # Expand history on space
+
+# Advanced history search functions
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+# Bind arrow keys for history search
+bindkey "^[[A" up-line-or-beginning-search    # Up arrow
+bindkey "^[[B" down-line-or-beginning-search  # Down arrow
+
+# =============================================================================
+# History Utilities
+# =============================================================================
+
+# Function to search history with fzf (if available)
+if command -v fzf &> /dev/null; then
+  fh() {
+    print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -E 's/ *[0-9]*\*? *//' | sed -E 's/\\/\\\\/g')
+  }
+fi
+
+# Function to show most used commands
+hist_top() {
+  history | awk '{print $2}' | sort | uniq -c | sort -rn | head -20
+}

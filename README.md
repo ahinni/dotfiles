@@ -5,10 +5,30 @@ Borrowed heavily from [r00k/dotfiles](https://github.com/r00k/dotfiles) and the 
 
 ## Installation
 
+### Prerequisites
+
+This dotfiles setup requires some tools to be installed via Homebrew:
+
+```bash
+# Install Homebrew (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install required tools
+brew install zsh starship fzf
+
+# Optional tools for enhanced experience
+brew install zoxide bat exa
+```
+
+### Install Dotfiles
+
 ```bash
 git clone https://github.com/ahinni/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./install.sh
+
+# Switch to zsh (if not already default)
+chsh -s $(which zsh)
 ```
 
 ## Repository Structure
@@ -46,12 +66,12 @@ dotfiles/
 
 This dotfiles repository includes configurations for:
 
-- **Bash** - Aliases, functions, paths, and shell configuration
-- **Zsh** - Modern zsh setup with custom configurations
-- **Git** - Global gitconfig and gitignore settings
+- **Bash** - Modernized aliases, functions, paths, and shell configuration
+- **Zsh** - Modern zsh setup with Zinit plugin manager, Starship prompt, syntax highlighting, and autosuggestions
+- **Git** - Global gitconfig and gitignore settings with enhanced aliases
 - **Vim/Neovim** - Editor configurations (active and archived)
 - **Tmux** - Terminal multiplexer configuration
-- **Various tools** - ack, jshint, rails, irb, and more
+- **Various tools** - ack, jshint, rails, irb, kubectl, docker, and more
 - **XDG Config** - Support for ~/.config subdirectories
 
 ## Features

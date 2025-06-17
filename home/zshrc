@@ -1,74 +1,109 @@
-# Path to your oh-my-zsh configuration.
-ZSH=$HOME/.dotfiles/oh-my-zsh
+# =============================================================================
+# Modern Zsh Configuration
+# =============================================================================
+# Performance: Start timing (uncomment to profile)
+# zmodload zsh/zprof
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="robbyrussell"
+# =============================================================================
+# Zinit Plugin Manager Setup
+# =============================================================================
 
-# Never know when you're gonna need to popd!
-setopt AUTO_PUSHD
+# Install zinit if not present
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+  mkdir -p "$(dirname $ZINIT_HOME)"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
 
-# Allow completing of the remainder of a command
-bindkey "^N" insert-last-word
+# Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
 
-# Show contents of directory after cd-ing into it
-chpwd() {
-  ls -lrthG
-}
+# =============================================================================
+# Essential Plugins (Fast Loading)
+# =============================================================================
 
-# Save a ton of history
-HISTSIZE=20000
-HISTFILE=~/.zsh_history
-SAVEHIST=20000
+# Syntax highlighting (load early)
+zinit light zsh-users/zsh-syntax-highlighting
 
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
+# Autosuggestions
+zinit light zsh-users/zsh-autosuggestions
 
-# Comment this out to disable weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
+# Additional completions
+zinit light zsh-users/zsh-completions
 
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
+# fzf integration
+zinit light Aloxaf/fzf-tab
 
-# Uncomment following line if you want to disable autosetting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# Git enhancements
+zinit light wfxr/forgit
 
-# Uncomment following line if you want red dots to be displayed while waiting for completion
-# COMPLETION_WAITING_DOTS="true"
+# =============================================================================
+# Zsh Options and Settings
+# =============================================================================
 
-# Disable flow control commands (keeps C-s from freezing everything)
-stty start undef
-stty stop undef
+# Source zsh-specific configuration
+source ~/.zsh/config
 
-# RVM 
-[[ -s "/Users/ben/.rvm/scripts/rvm" ]] && source "/Users/ben/.rvm/scripts/rvm"
+# =============================================================================
+# Load Modular Configurations
+# =============================================================================
 
-#export NVM_DIR="$HOME/.nvm"
-#[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# Load PATH configuration (from bash, works for zsh too)
+source ~/.bash/paths
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git rvm)
+# Load general configuration (zsh-compatible parts only)
+# Note: Skip bash/config as it contains bash-specific commands
 
-#source $ZSH/oh-my-zsh.sh
+# Load history configuration (zsh-specific version)
+source ~/.zsh/history_config
 
-# Source my custom files after oh-my-zsh so I can override things.
-#source $HOME/.dotfiles/zsh/aliases
-#source $HOME/.dotfiles/zsh/functions
+# Load aliases (zsh-enhanced version)
+source ~/.zsh/aliases
 
-# Customize to your needs...
-export PATH="./node_modules/.bin:~/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/local/sbin:/usr/local/lib/ruby/gems/3.0.0/bin:/usr/local/opt/curl/bin:$PATH"
+# Load functions (zsh-enhanced version)
+source ~/.zsh/functions
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-PATH=$PATH:/usr/texbin
+# Load completions
+source ~/.zsh/completions
 
-# Shaves about 0.5s off Rails boot time (when using perf patch). Taken from https://gist.github.com/1688857
-export RUBY_HEAP_MIN_SLOTS=1000000
-export RUBY_HEAP_SLOTS_INCREMENT=1000000
-export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
-export RUBY_GC_MALLOC_LIMIT=1000000000
-export RUBY_HEAP_FREE_MIN=500000
+# =============================================================================
+# Tool Initialization (Lazy Loaded for Performance)
+# =============================================================================
+
+# NVM (lazy load)
+export NVM_DIR="$HOME/.nvm"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  # Lazy load nvm
+  nvm() {
+    unfunction nvm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm "$@"
+  }
+fi
+
+# RVM (lazy load)
+if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+  rvm() {
+    unfunction rvm
+    source "$HOME/.rvm/scripts/rvm"
+    rvm "$@"
+  }
+fi
+
+# =============================================================================
+# Starship Prompt Initialization
+# =============================================================================
+
+# Set starship config path
+export STARSHIP_CONFIG=~/.zsh/starship.toml
+
+# Initialize starship prompt (must be at end)
+if command -v starship &> /dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+# =============================================================================
+# Performance: End timing (uncomment to profile)
+# =============================================================================
+# zprof

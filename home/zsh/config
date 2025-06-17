@@ -1,0 +1,148 @@
+# =============================================================================
+# Zsh-Specific Configuration
+# =============================================================================
+
+# =============================================================================
+# General Configuration (from bash, adapted for zsh)
+# =============================================================================
+
+export EDITOR="nvim"
+
+# When using tar on the mac, ignore the extended attributes
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
+
+# Colors for ls command
+export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
+
+# SSH Configuration (macOS keychain integration)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Add SSH keys to keychain on macOS
+  ssh-add --apple-load-keychain 2>/dev/null
+fi
+
+# =============================================================================
+# Zsh Options
+# =============================================================================
+
+# Navigation
+setopt AUTO_CD              # Auto cd to directory if command is a directory
+setopt AUTO_PUSHD           # Push directories to stack automatically
+setopt PUSHD_IGNORE_DUPS    # Don't push duplicate directories
+setopt PUSHD_MINUS          # Use - instead of + for directory stack
+
+# Completion
+setopt AUTO_MENU            # Show completion menu on tab
+setopt COMPLETE_IN_WORD     # Complete from both ends of word
+setopt ALWAYS_TO_END        # Move cursor to end of word after completion
+setopt AUTO_LIST            # Automatically list choices on ambiguous completion
+setopt AUTO_PARAM_SLASH     # Add trailing slash to directory names
+setopt AUTO_PARAM_KEYS      # Remove trailing spaces after completion
+setopt FLOW_CONTROL         # Enable flow control (^S/^Q)
+
+# History
+setopt EXTENDED_HISTORY     # Save timestamp and duration
+setopt HIST_EXPIRE_DUPS_FIRST  # Expire duplicates first
+setopt HIST_IGNORE_DUPS     # Don't record duplicates
+setopt HIST_IGNORE_ALL_DUPS # Remove older duplicate entries
+setopt HIST_FIND_NO_DUPS    # Don't display duplicates in search
+setopt HIST_IGNORE_SPACE    # Don't record commands starting with space
+setopt HIST_SAVE_NO_DUPS    # Don't save duplicates
+setopt HIST_VERIFY          # Show command before executing from history
+setopt SHARE_HISTORY        # Share history between sessions
+
+# Globbing
+setopt EXTENDED_GLOB        # Enable extended globbing
+setopt GLOB_DOTS            # Include dotfiles in globbing
+setopt NUMERIC_GLOB_SORT    # Sort numerically when possible
+
+# Input/Output
+setopt CORRECT              # Correct commands
+setopt CORRECT_ALL          # Correct all arguments
+setopt INTERACTIVE_COMMENTS # Allow comments in interactive shell
+setopt RC_QUOTES            # Allow '' to represent single quote in single quotes
+
+# Job Control
+setopt AUTO_RESUME          # Resume jobs on exact command match
+setopt LONG_LIST_JOBS       # List jobs in long format
+setopt NOTIFY               # Report job status immediately
+
+# =============================================================================
+# Key Bindings
+# =============================================================================
+
+# Use emacs key bindings
+bindkey -e
+
+# Enhanced history search
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+# Word movement (like bash)
+bindkey '^[[1;5C' forward-word      # Ctrl+Right
+bindkey '^[[1;5D' backward-word     # Ctrl+Left
+
+# Line editing
+bindkey '^A' beginning-of-line      # Ctrl+A
+bindkey '^E' end-of-line           # Ctrl+E
+bindkey '^K' kill-line             # Ctrl+K
+bindkey '^U' backward-kill-line    # Ctrl+U
+bindkey '^W' backward-kill-word    # Ctrl+W
+
+# Insert last word from previous command
+bindkey '^N' insert-last-word
+
+# =============================================================================
+# Completion System
+# =============================================================================
+
+# Initialize completion system
+autoload -Uz compinit
+compinit
+
+# Completion styling
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Completion for kill command
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+
+# =============================================================================
+# Directory Navigation Enhancements
+# =============================================================================
+
+# Show directory contents after cd
+chpwd() {
+  ls -lrthG
+}
+
+# =============================================================================
+# Plugin Configuration
+# =============================================================================
+
+# zsh-autosuggestions
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+# fzf-tab
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls -la $realpath'
+zstyle ':fzf-tab:*' switch-group ',' '.'
+
+# =============================================================================
+# Performance Optimizations
+# =============================================================================
+
+# Disable flow control commands (keeps C-s from freezing everything)
+stty start undef
+stty stop undef
+
+# Reduce escape sequence timeout
+export KEYTIMEOUT=1

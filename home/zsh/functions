@@ -1,47 +1,293 @@
-function git-new-remote-tracking {
-  git checkout -b $1 && git push -u origin $1
+# =============================================================================
+# Ruby/Gem Functions
+# =============================================================================
+
+# Switch to a gem directory, trying to match your name the best
+function cdgem {
+  if ! command -v gem &> /dev/null; then
+    echo "Error: gem command not found"
+    return 1
+  fi
+
+  local gem_dir=$(gem env gemdir 2>/dev/null)
+  if [[ -z "$gem_dir" ]]; then
+    echo "Error: Could not determine gem directory"
+    return 1
+  fi
+
+  if [[ ! -d "$gem_dir/gems" ]]; then
+    echo "Error: Gems directory not found at $gem_dir/gems"
+    return 1
+  fi
+
+  cd "$gem_dir/gems" || return 1
+
+  if [[ -n "$1" ]]; then
+    local target=$(ls | grep "$1" | sort | tail -1)
+    if [[ -n "$target" ]]; then
+      cd "$target" || return 1
+    else
+      echo "No gem matching '$1' found"
+      return 1
+    fi
+  fi
 }
 
-function git_branch_name {
-  val=`git branch 2>/dev/null | grep '^*' | colrm 1 2`
+function sgi {
+  sudo gem install "$1"
+}
+
+function glg {
+  gem list | grep "$1"
+}
+
+# =============================================================================
+# Rails Functions
+# =============================================================================
+
+function rrg {
+  bundle exec rake routes | grep "$1"
+}
+
+# =============================================================================
+# Git Functions
+# =============================================================================
+
+function parse_git_branch {
+  local val=$(git_branch_name | sed 's_\(.*\)_(\1)_')
   echo "$val"
 }
 
+function git-new-remote-tracking {
+  if [[ -z "$1" ]]; then
+    echo "Usage: git-new-remote-tracking <branch-name>"
+    return 1
+  fi
+  git checkout -b "$1" && git push -u origin "$1"
+}
+
+function git_branch_name {
+  local val=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
+  echo "$val"
+}
+
+# Note: This function assumes a specific workflow. Consider simplifying or removing.
 function git-done {
-  branch=`git_branch_name`
-  git checkout master && git merge $branch --ff-only && bundle install && rake db:migrate db:test:prepare && rake && git push && git branch -D $branch && git push origin :$branch
+  local branch=$(git_branch_name)
+  if [[ -z "$branch" || "$branch" == "master" || "$branch" == "main" ]]; then
+    echo "Error: Not on a feature branch"
+    return 1
+  fi
+
+  echo "Warning: This will merge $branch into master and delete it. Continue? (y/N)"
+  read -r response
+  if [[ ! "$response" =~ ^[Yy]$ ]]; then
+    echo "Aborted"
+    return 1
+  fi
+
+  git checkout master && git pull --rebase && \
+  git checkout "$branch" && git rebase master && \
+  git checkout master && git merge "$branch" && \
+  bundle install && bundle exec rake db:migrate && bundle exec rake && \
+  git push && git branch -d "$branch" && git push origin :"$branch"
 }
 
 function git-nuke {
-  git branch -D $1 && git push origin :$1
+  if [[ -z "$1" ]]; then
+    echo "Usage: git-nuke <branch-name>"
+    return 1
+  fi
+  git branch -D "$1" && git push origin :"$1"
 }
 
-function git-on-master {
-  branch=`git_branch_name`
-  git checkout master && git pull --rebase 
-  git checkout $branch
-  git rebase master
-  }
+# Creating a remote tracking branch
+function track {
+  if [[ -z "$1" ]]; then
+    echo "Usage: track <branch-name>"
+    return 1
+  fi
+  git branch --track "$1" "origin/$1"
+}
 
 function g {
   if [[ $# > 0 ]]; then
-    git $@
+    git "$@"
   else
     git status
   fi
 }
+
+# Zsh-specific git completion for g function
 compdef g=git
 
-function rrg {
-  rake routes | grep $1
+# =============================================================================
+# Kubernetes Functions
+# =============================================================================
+
+# Switch kubectl context and show current contexts
+function kc () {
+  if [[ -n "$1" ]]; then
+    kubectl config use-context "$1"
+  fi
+  kubectl config get-contexts
 }
 
+# Get a shell in a kubernetes pod by app name
+function kubeshell() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: kubeshell <app-name> [context] [namespace]"
+    return 1
+  fi
+
+  local ctxopts=""
+  local nsopts=""
+
+  if [[ -n "$2" ]]; then
+    ctxopts="--context $2"
+  fi
+
+  if [[ -n "$3" ]]; then
+    nsopts="-n $3"
+  fi
+
+  local pod=$(kubectl $ctxopts $nsopts get pod -l app.kubernetes.io/name="$1" -o name | head -1)
+
+  if [[ -z "$pod" ]]; then
+    echo "No pod found for app: $1"
+    return 1
+  fi
+
+  kubectl $ctxopts $nsopts exec -it "$pod" -- bash
+}
+
+# =============================================================================
+# AWS/Database Functions
+# =============================================================================
+
+# Get database password from AWS Secrets Manager
+function dbpass () {
+  if [[ $# -lt 1 ]]; then
+    echo "Usage: ${funcstack[1]} <env> [user] [region]"
+    echo
+    echo "  env     - Environment name (e.g., dev, prod)"
+    echo "  user    - Optional. One of: marketspace (default), recording, sidewinder"
+    echo "  region  - Optional. One of: us1 (default), eu1"
+    echo
+    echo "Examples:"
+    echo "  ${funcstack[1]} dev"
+    echo "  ${funcstack[1]} prod recording"
+    echo "  ${funcstack[1]} dev sidewinder eu1"
+    return 1
+  fi
+
+  local env="$1"
+  local user="${2:-marketspace}"
+  local region_code="${3:-us1}"
+
+  # Determine AWS region
+  local region
+  if [[ "$region_code" == "us1" && "$env" == "prod" ]]; then
+    region="us-east-2"
+  else
+    case "$region_code" in
+      us1) region="us-west-2" ;;
+      eu1) region="eu-central-1" ;;
+      *) echo "Unsupported region code: $region_code" >&2; return 1 ;;
+    esac
+  fi
+
+  # Determine secret key
+  local secret_key
+  case "$user" in
+    marketspace) secret_key="MARKETSPACE_DB_PASSWORD" ;;
+    recording) secret_key="RECORDING_DB_PASSWORD" ;;
+    sidewinder) secret_key="SIDEWINDER_DB_PASSWORD" ;;
+    *) echo "Unsupported user: $user" >&2; return 1 ;;
+  esac
+
+  aws --profile nuso --region "$region" secretsmanager get-secret-value \
+    --secret-id "marketspace-${env}-portal-api-settings" \
+    --query SecretString --output text | \
+    jq -r --arg key "$secret_key" '.[$key]'
+}
+
+# =============================================================================
+# Zsh-Specific Enhanced Functions
+# =============================================================================
+
+# Enhanced directory creation and navigation
 function take {
-  mkdir $1
-  cd $1
+  if [[ -z "$1" ]]; then
+    echo "Usage: take <directory-name>"
+    return 1
+  fi
+  mkdir -p "$1" && cd "$1"
 }
 
-# Allows commit message without typing quotes (can't have quotes in the commit msg though).
-function gc {
-  git commit -m "$*"
+# Enhanced file search with fzf integration
+function ff {
+  if command -v fzf &> /dev/null; then
+    find . -type f | fzf --preview 'head -100 {}'
+  else
+    find . -type f -name "*$1*"
+  fi
+}
+
+# Enhanced process search and kill
+function psg {
+  ps aux | grep -v grep | grep "$1"
+}
+
+function psk {
+  local pid=$(ps aux | grep -v grep | grep "$1" | awk '{print $2}' | head -1)
+  if [[ -n "$pid" ]]; then
+    echo "Killing process $pid"
+    kill "$pid"
+  else
+    echo "No process found matching '$1'"
+  fi
+}
+
+# Quick file editing
+function e {
+  if [[ -z "$1" ]]; then
+    nvim .
+  else
+    nvim "$1"
+  fi
+}
+
+# Extract various archive formats
+function extract {
+  if [[ -z "$1" ]]; then
+    echo "Usage: extract <archive-file>"
+    return 1
+  fi
+
+  if [[ ! -f "$1" ]]; then
+    echo "Error: '$1' is not a valid file"
+    return 1
+  fi
+
+  case "$1" in
+    *.tar.bz2)   tar xjf "$1"     ;;
+    *.tar.gz)    tar xzf "$1"     ;;
+    *.bz2)       bunzip2 "$1"     ;;
+    *.rar)       unrar x "$1"     ;;
+    *.gz)        gunzip "$1"      ;;
+    *.tar)       tar xf "$1"      ;;
+    *.tbz2)      tar xjf "$1"     ;;
+    *.tgz)       tar xzf "$1"     ;;
+    *.zip)       unzip "$1"       ;;
+    *.Z)         uncompress "$1"  ;;
+    *.7z)        7z x "$1"        ;;
+    *)           echo "Error: '$1' cannot be extracted via extract()" ;;
+  esac
+}
+
+# Quick weather check
+function weather {
+  local location="${1:-}"
+  curl -s "wttr.in/${location}?format=3"
 }

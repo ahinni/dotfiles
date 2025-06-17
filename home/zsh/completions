@@ -1,0 +1,187 @@
+# =============================================================================
+# Zsh Completions Configuration
+# =============================================================================
+
+# =============================================================================
+# Completion System Setup
+# =============================================================================
+
+# Add custom completion directory to fpath
+fpath=(~/.zsh/completion_scripts $fpath)
+
+# Initialize completion system (if not already done)
+autoload -Uz compinit
+compinit
+
+# =============================================================================
+# Tool-Specific Completions
+# =============================================================================
+
+# Docker completions
+if command -v docker &> /dev/null; then
+  # Docker completion
+  if [[ -f /usr/local/etc/bash_completion.d/docker ]]; then
+    source /usr/local/etc/bash_completion.d/docker
+  fi
+fi
+
+# Docker Compose completions
+if command -v docker-compose &> /dev/null; then
+  if [[ -f /usr/local/etc/bash_completion.d/docker-compose ]]; then
+    source /usr/local/etc/bash_completion.d/docker-compose
+  fi
+fi
+
+# Kubectl completions
+if command -v kubectl &> /dev/null; then
+  source <(kubectl completion zsh)
+  # Also complete for k alias
+  compdef k=kubectl
+fi
+
+# Helm completions
+if command -v helm &> /dev/null; then
+  source <(helm completion zsh)
+fi
+
+# AWS CLI completions
+if command -v aws &> /dev/null; then
+  # AWS CLI v2 has built-in zsh completion
+  if [[ -f /usr/local/bin/aws_zsh_completer.sh ]]; then
+    source /usr/local/bin/aws_zsh_completer.sh
+  elif [[ -f /opt/homebrew/bin/aws_zsh_completer.sh ]]; then
+    source /opt/homebrew/bin/aws_zsh_completer.sh
+  fi
+fi
+
+# Git completions (enhanced)
+if command -v git &> /dev/null; then
+  # Git flow completions if available
+  if command -v git-flow &> /dev/null; then
+    source ~/.zsh/completion_scripts/git-flow-completion.zsh 2>/dev/null || true
+  fi
+fi
+
+# Homebrew completions
+if command -v brew &> /dev/null; then
+  if [[ -d "$(brew --prefix)/share/zsh/site-functions" ]]; then
+    fpath+="$(brew --prefix)/share/zsh/site-functions"
+  fi
+fi
+
+# Node.js/npm completions
+if command -v npm &> /dev/null; then
+  # npm completion (zsh compatible)
+  if npm completion >/dev/null 2>&1; then
+    source <(npm completion)
+  fi
+fi
+
+# Yarn completions
+if command -v yarn &> /dev/null; then
+  # Yarn completion (if available)
+  if [[ -f ~/.yarn-completion ]]; then
+    source ~/.yarn-completion
+  fi
+fi
+
+# =============================================================================
+# Custom Completions
+# =============================================================================
+
+# Completion for custom git functions
+_git_branch_names() {
+  local branches
+  branches=(${(f)"$(git branch --format='%(refname:short)' 2>/dev/null)"})
+  _describe 'branches' branches
+}
+
+# Completion for git-nuke function
+_git-nuke() {
+  _git_branch_names
+}
+compdef _git-nuke git-nuke
+
+# Completion for track function
+_track() {
+  local remote_branches
+  remote_branches=(${(f)"$(git branch -r --format='%(refname:short)' 2>/dev/null | sed 's/origin\///')"})
+  _describe 'remote branches' remote_branches
+}
+compdef _track track
+
+# Completion for kubeshell function
+_kubeshell() {
+  if (( CURRENT == 2 )); then
+    # Complete app names from current context
+    local apps
+    apps=(${(f)"$(kubectl get pods -o jsonpath='{.items[*].metadata.labels.app\.kubernetes\.io/name}' 2>/dev/null | tr ' ' '\n' | sort -u)"})
+    _describe 'apps' apps
+  elif (( CURRENT == 3 )); then
+    # Complete contexts
+    local contexts
+    contexts=(${(f)"$(kubectl config get-contexts -o name 2>/dev/null)"})
+    _describe 'contexts' contexts
+  elif (( CURRENT == 4 )); then
+    # Complete namespaces
+    local namespaces
+    namespaces=(${(f)"$(kubectl get namespaces -o name 2>/dev/null | sed 's/namespace\///')"})
+    _describe 'namespaces' namespaces
+  fi
+}
+compdef _kubeshell kubeshell
+
+# Completion for kc (kubectl context) function
+_kc() {
+  local contexts
+  contexts=(${(f)"$(kubectl config get-contexts -o name 2>/dev/null)"})
+  _describe 'contexts' contexts
+}
+compdef _kc kc
+
+# =============================================================================
+# Enhanced Completion Behavior
+# =============================================================================
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Partial completion suggestions
+zstyle ':completion:*' list-suffixes
+zstyle ':completion:*' expand prefix suffix
+
+# Group completions by type
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '%B%d%b'
+
+# Use colors in completion
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# Menu selection for completions
+zstyle ':completion:*' menu select
+
+# Cache completions for better performance
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# =============================================================================
+# FZF Integration (if available)
+# =============================================================================
+
+if command -v fzf &> /dev/null; then
+  # FZF key bindings and completion
+  if [[ -f ~/.fzf.zsh ]]; then
+    source ~/.fzf.zsh
+  elif [[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ]]; then
+    source /usr/local/opt/fzf/shell/key-bindings.zsh
+    source /usr/local/opt/fzf/shell/completion.zsh
+  elif [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
+    source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+    source /opt/homebrew/opt/fzf/shell/completion.zsh
+  fi
+
+  # Custom FZF settings
+  export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+  export FZF_CTRL_T_OPTS="--preview 'head -100 {}'"
+  export FZF_ALT_C_OPTS="--preview 'ls -la {}'"
+fi
