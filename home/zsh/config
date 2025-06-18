@@ -56,8 +56,8 @@ setopt GLOB_DOTS            # Include dotfiles in globbing
 setopt NUMERIC_GLOB_SORT    # Sort numerically when possible
 
 # Input/Output
-setopt CORRECT              # Correct commands
-setopt CORRECT_ALL          # Correct all arguments
+# setopt CORRECT              # Correct commands
+#setopt CORRECT_ALL          # Correct all arguments
 setopt INTERACTIVE_COMMENTS # Allow comments in interactive shell
 setopt RC_QUOTES            # Allow '' to represent single quote in single quotes
 

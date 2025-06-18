@@ -1,4 +1,4 @@
-# Task 000: Setup .config Directory Management
+# Task 003: Setup .config Directory Management
 
 ## Overview
 Establish proper management of the `~/.config` directory and its subdirectories within the dotfiles system. This is foundational work that must be completed before modernizing bash configuration, as it affects editor choices and tool configurations.

@@ -19,19 +19,50 @@ replace_file() {
   link_file "$source_path" "$filename"
 }
 
-# Function to handle .config subdirectories
+# Function to safely link individual .config subdirectories
 link_config_dir() {
   local config_dir=$1
-  echo "linking ~/.config/${config_dir}"
+  local source_path="$DOTFILES_DIR/home/config/$config_dir"
+  local target_path="$HOME/.config/$config_dir"
 
-  # Create ~/.config if it doesn't exist
-  mkdir -p "$HOME/.config"
+  # Ensure source exists
+  if [ ! -d "$source_path" ]; then
+    echo "⚠️  Source config not found: $source_path"
+    return 1
+  fi
 
-  # Remove existing config directory if it exists
-  rm -rf "$HOME/.config/$config_dir"
+  # Create ~/.config directory if it doesn't exist (standard XDG location)
+  if [ ! -d "$HOME/.config" ]; then
+    echo "Creating ~/.config directory (XDG standard)"
+    mkdir -p "$HOME/.config"
+  fi
 
-  # Link the config directory
-  ln -sf "$DOTFILES_DIR/home/config/$config_dir" "$HOME/.config/$config_dir"
+  # Safety check: backup existing config if it exists and isn't already our symlink
+  if [ -e "$target_path" ] && [ ! -L "$target_path" ]; then
+    local backup_path="${target_path}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "📦 Backing up existing $target_path to $backup_path"
+    mv "$target_path" "$backup_path"
+  elif [ -L "$target_path" ] && [ "$(readlink "$target_path")" = "$source_path" ]; then
+    echo "✅ ~/.config/$config_dir is already linked correctly"
+    return 0
+  elif [ -L "$target_path" ]; then
+    echo "⚠️  ~/.config/$config_dir is a symlink to $(readlink "$target_path")"
+    echo "    Will replace with our dotfiles version"
+    rm "$target_path"
+  fi
+
+  # Create the symlink
+  echo "🔗 Linking ~/.config/${config_dir} -> $source_path"
+  ln -sf "$source_path" "$target_path"
+
+  # Verify the link was created successfully
+  if [ -L "$target_path" ] && [ "$(readlink "$target_path")" = "$source_path" ]; then
+    echo "✅ Successfully linked ~/.config/$config_dir"
+    return 0
+  else
+    echo "❌ Failed to link ~/.config/$config_dir"
+    return 1
+  fi
 }
 
 # Install dotfiles from home/ directory
@@ -49,12 +80,25 @@ install_dotfiles() {
 
     # Handle .config subdirectories specially
     if [[ "$filename" == "config" ]]; then
+      echo ""
+      echo "🔧 Setting up .config subdirectory management..."
+      config_success=true
       for config_item in "$item"/*; do
         if [[ -e "$config_item" ]]; then
           local config_name=$(basename "$config_item")
-          link_config_dir "$config_name"
+          echo "Processing config subdirectory: $config_name"
+          if ! link_config_dir "$config_name"; then
+            config_success=false
+          fi
         fi
       done
+
+      if [ "$config_success" = true ]; then
+        echo "✅ All .config subdirectories linked successfully"
+      else
+        echo "⚠️  Some .config subdirectories failed to link"
+      fi
+      echo ""
       continue
     fi
 

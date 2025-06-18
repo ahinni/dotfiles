@@ -1,3 +1,21 @@
 vim/.netrwhist
 vim/bundle
 vim/doc/tags-ja
+
+# Sensitive .config directories (never commit these)
+home/config/op/
+home/config/configstore/
+
+# Backup files
+*.backup.*
+.config.backup.*
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+.tmp/
