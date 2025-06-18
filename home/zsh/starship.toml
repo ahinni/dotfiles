@@ -12,10 +12,10 @@ add_newline = true
 # Second line has directory and prompt symbol
 format = """
 $time\
-$username\
-$hostname\
 $git_branch\
 $git_status\
+$username\
+$hostname\
 $nodejs\
 $python\
 $ruby\
@@ -173,7 +173,7 @@ show_always = true
 
 [time]
 disabled = false
-format = '🕙[$time]($style) '
+format = '⌚[$time]($style) '
 time_format = "%H:%M:%S"
 utc_time_offset = "local"
 style = "bold yellow"
