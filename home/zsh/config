@@ -47,7 +47,7 @@ setopt HIST_IGNORE_ALL_DUPS # Remove older duplicate entries
 setopt HIST_FIND_NO_DUPS    # Don't display duplicates in search
 setopt HIST_IGNORE_SPACE    # Don't record commands starting with space
 setopt HIST_SAVE_NO_DUPS    # Don't save duplicates
-setopt HIST_VERIFY          # Show command before executing from history
+# setopt HIST_VERIFY          # Show command before executing from history
 setopt SHARE_HISTORY        # Share history between sessions
 
 # Globbing
