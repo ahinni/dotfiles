@@ -53,6 +53,7 @@ symbol = "🌱 "
 truncation_length = 20
 truncation_symbol = "…"
 style = "bold purple"
+format = "[$symbol$branch]($style) "
 
 [git_commit]
 commit_hash_length = 8
@@ -190,7 +191,7 @@ display_private = false
 disabled = false
 
 [conda]
-format = "via [🅒 $environment](dimmed green) "
+format = "[🅒 $environment](dimmed green) "
 ignore_base = true
 truncation_length = 1
 
@@ -244,7 +245,7 @@ disabled = false
 threshold = 70
 symbol = "🐏 "
 style = "bold dimmed white"
-format = "via $symbol[${ram}( | ${swap})]($style) "
+format = "$symbol[${ram}( | ${swap})]($style) "
 
 # =============================================================================
 # Custom Commands
