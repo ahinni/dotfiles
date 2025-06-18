@@ -144,6 +144,20 @@ chpwd() {
 # Plugin Configuration
 # =============================================================================
 
+# zsh-syntax-highlighting colors
+# Fix dark blue colors that are hard to see on dark backgrounds
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=cyan,bold'          # !$ and other history expansions
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=cyan'                       # * ? [ ] patterns
+ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=yellow'         # -x options
+ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=yellow'         # --option
+ZSH_HIGHLIGHT_STYLES[back-quoted-argument]='fg=magenta'        # `command`
+ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]='fg=magenta'      # $'string'
+ZSH_HIGHLIGHT_STYLES[rc-quote]='fg=magenta'                    # ''string''
+ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]='fg=cyan'  # $var in "string"
+ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]='fg=cyan'    # \$ in "string"
+ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]='fg=cyan'    # \$ in $'string'
+
 # zsh-autosuggestions
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
