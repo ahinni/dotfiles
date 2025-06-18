@@ -5,28 +5,8 @@
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Two-line prompt with blank line between shell prompts
+# Inserts a blank line between shell prompts
 add_newline = true
-
-# Custom format: First line has time, user, hostname, git info
-# Second line has directory and prompt symbol
-format = """
-$time\
-$username\
-$hostname\
-$git_branch\
-$git_status\
-$nodejs\
-$python\
-$ruby\
-$rust\
-$golang\
-$java\
-$docker_context\
-$kubernetes\
-$memory_usage
-$directory\
-$character"""
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character]
@@ -38,11 +18,10 @@ error_symbol = '[➜](bold red)'
 # =============================================================================
 
 [directory]
-style = "cyan bold"  # Visible on black background
+style = "blue"
 read_only = " 🔒"
 truncation_length = 4
 truncate_to_repo = false
-format = "[$path]($style)[$read_only]($read_only_style) "
 
 # =============================================================================
 # Git Configuration
@@ -65,17 +44,17 @@ cherry_pick = "[🍒 PICKING](bold red)"
 [git_status]
 format = '([\[$all_status$ahead_behind\]]($style) )'
 style = "cyan"
-conflicted = "!"
+conflicted = "🏳"
 up_to_date = "✓"
-untracked = "?${count}"
+untracked = "🤷"
 ahead = "⇡${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
 behind = "⇣${count}"
-stashed = "$${count}"
-modified = "M${count}"
-staged = "+${count}"
-renamed = "R${count}"
-deleted = "D${count}"
+stashed = "📦"
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑"
 
 # =============================================================================
 # Language and Tool Configuration
@@ -146,7 +125,7 @@ detect_folders = ['k8s']
 format = 'on [$symbol($profile )(\($region\) )(\[$duration\] )]($style)'
 symbol = "☁️  "
 style = "bold blue"
-disabled = true  # Disable AWS info as requested
+disabled = false
 
 [aws.region_aliases]
 ap-southeast-2 = "au"
@@ -160,23 +139,22 @@ us-west-2 = "or"
 
 [hostname]
 ssh_only = false
-format = " on [$hostname](bold red) "
+format = "[$ssh_symbol](bold blue) on [$hostname](bold red) "
 trim_at = "."
 disabled = false
 
 [username]
 style_user = "white bold"
 style_root = "black bold"
-format = "[$user]($style)"
+format = "[$user]($style) "
 disabled = false
 show_always = true
 
 [time]
 disabled = false
-format = '🕙[$time]($style) '
-time_format = "%H:%M:%S"
+format = '🕙[\[ $time \]]($style) '
+time_format = "%T"
 utc_time_offset = "local"
-style = "bold yellow"
 
 # =============================================================================
 # Package Managers

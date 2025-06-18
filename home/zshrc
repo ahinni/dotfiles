@@ -96,6 +96,7 @@ fi
 # =============================================================================
 
 # Set starship config path
+# Options: starship.toml (full), starship-minimal.toml (clean), starship-bash-like.toml (simple)
 export STARSHIP_CONFIG=~/.zsh/starship.toml
 
 # Initialize starship prompt (must be at end)
