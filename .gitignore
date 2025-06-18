@@ -19,3 +19,6 @@ home/config/configstore/
 # Temporary files
 *.tmp
 .tmp/
+
+# Cache directories
+home/zsh/cache/
