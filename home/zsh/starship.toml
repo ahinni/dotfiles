@@ -25,7 +25,6 @@ $rust\
 $golang\
 $java\
 $docker_context\
-$kubernetes\
 $memory_usage
 $directory\
 $character"""
