@@ -11,8 +11,17 @@ export EDITOR="nvim"
 # When using tar on the mac, ignore the extended attributes
 export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
 
-# Colors for ls command
-export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
+# LSCOLORS for BSD ls (macOS)
+# LSCOLORS format: directory, symlink, socket, pipe, executable, block special,
+# character special, executable with setuid, executable with setgid,
+# directory writable by others with sticky bit, directory writable by others without sticky bit
+# Using 'Ea' for world-writable dirs: bright blue text on red background (good contrast + warning)
+export LSCOLORS="Gxfxcxdxbxegedabagacab"
+
+# LS_COLORS for GNU ls (if installed via homebrew coreutils)
+# This provides better color support and is more widely compatible
+# Using ow=1;34;41 (bright blue text on red background) for good contrast + security warning
+export LS_COLORS='di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=1;34;41:*.tar=31:*.tgz=31:*.arc=31:*.arj=31:*.taz=31:*.lha=31:*.lz4=31:*.lzh=31:*.lzma=31:*.tlz=31:*.txz=31:*.tzo=31:*.t7z=31:*.zip=31:*.z=31:*.Z=31:*.dz=31:*.gz=31:*.lrz=31:*.lz=31:*.lzo=31:*.xz=31:*.bz2=31:*.bz=31:*.tbz=31:*.tbz2=31:*.tz=31:*.deb=31:*.rpm=31:*.jar=31:*.war=31:*.ear=31:*.sar=31:*.rar=31:*.alz=31:*.ace=31:*.zoo=31:*.cpio=31:*.7z=31:*.rz=31:*.cab=31:*.jpg=35:*.jpeg=35:*.gif=35:*.bmp=35:*.pbm=35:*.pgm=35:*.ppm=35:*.tga=35:*.xbm=35:*.xpm=35:*.tif=35:*.tiff=35:*.png=35:*.svg=35:*.svgz=35:*.mng=35:*.pcx=35:*.mov=35:*.mpg=35:*.mpeg=35:*.m2v=35:*.mkv=35:*.webm=35:*.ogm=35:*.mp4=35:*.m4v=35:*.mp4v=35:*.vob=35:*.qt=35:*.nuv=35:*.wmv=35:*.asf=35:*.rm=35:*.rmvb=35:*.flc=35:*.avi=35:*.fli=35:*.flv=35:*.gl=35:*.dl=35:*.xcf=35:*.xwd=35:*.yuv=35:*.cgm=35:*.emf=35:*.axv=35:*.anx=35:*.ogv=35:*.ogx=35:*.aac=36:*.au=36:*.flac=36:*.mid=36:*.midi=36:*.mka=36:*.mp3=36:*.mpc=36:*.ogg=36:*.ra=36:*.wav=36:*.axa=36:*.oga=36:*.spx=36:*.xspf=36:'
 
 # SSH Configuration (macOS keychain integration)
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -121,7 +130,14 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 # Show directory contents after cd
 chpwd() {
-  ls -lrthG
+  # Use ls command with proper color support
+  if ls --color=auto / >/dev/null 2>&1; then
+    # GNU ls
+    ls -lrth --color=auto
+  else
+    # BSD ls (macOS)
+    ls -lrthG
+  fi
 }
 
 # =============================================================================

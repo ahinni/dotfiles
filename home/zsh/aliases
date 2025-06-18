@@ -13,7 +13,14 @@ fi
 alias c='clear'
 alias l='ls'
 alias ll='ls -la'
-alias ls='ls -G'
+# Smart ls alias that works with both BSD ls (macOS) and GNU ls (homebrew coreutils)
+if ls --color=auto / >/dev/null 2>&1; then
+  # GNU ls (supports --color)
+  alias ls='ls --color=auto'
+else
+  # BSD ls (macOS default, supports -G)
+  alias ls='ls -G'
+fi
 alias u='cd ..'
 
 # Enhanced navigation aliases (zsh-specific)
