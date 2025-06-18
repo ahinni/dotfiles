@@ -1,6 +1,8 @@
 # =============================================================================
-# Starship Prompt Configuration
+# Starship Prompt Configuration - FULL VERSION
 # =============================================================================
+# This is the full-featured prompt configuration.
+# Use 'prompt-toggle' functions to switch between different configurations.
 
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'

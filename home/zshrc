@@ -95,9 +95,11 @@ fi
 # Starship Prompt Initialization
 # =============================================================================
 
-# Set starship config path
+# Set default starship config path (can be overridden by prompt toggle functions)
 # Options: starship.toml (full), starship-minimal.toml (clean), starship-bash-like.toml (simple)
-export STARSHIP_CONFIG=~/.zsh/starship.toml
+if [[ -z "$STARSHIP_CONFIG" ]]; then
+  export STARSHIP_CONFIG=~/.zsh/starship.toml
+fi
 
 # Initialize starship prompt (must be at end)
 if command -v starship &> /dev/null; then

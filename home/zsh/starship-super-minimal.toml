@@ -1,0 +1,98 @@
+# =============================================================================
+# Starship Prompt Configuration - SUPER MINIMAL VERSION
+# =============================================================================
+# Absolute minimal prompt - just directory and prompt symbol
+# Use 'prompt-super-minimal' to activate this configuration
+
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# No blank line between shell prompts
+add_newline = false
+
+# Super minimal format: just directory and prompt symbol
+format = """
+$directory\
+$character"""
+
+# =============================================================================
+# Directory Configuration - Super Minimal
+# =============================================================================
+
+[directory]
+style = "cyan"
+truncation_length = 1  # Show only current directory name
+truncate_to_repo = true
+format = "[$path]($style) "
+
+# =============================================================================
+# Character Configuration
+# =============================================================================
+
+[character]
+success_symbol = '[>](green)'
+error_symbol = '[>](red)'
+
+# =============================================================================
+# Disable ALL Other Modules
+# =============================================================================
+
+[time]
+disabled = true
+
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+[git_branch]
+disabled = true
+
+[git_status]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[ruby]
+disabled = true
+
+[rust]
+disabled = true
+
+[golang]
+disabled = true
+
+[java]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[aws]
+disabled = true
+
+[memory_usage]
+disabled = true
+
+[cmd_duration]
+disabled = true
+
+[battery]
+disabled = true
+
+[package]
+disabled = true
+
+[conda]
+disabled = true
+
+[jobs]
+disabled = true

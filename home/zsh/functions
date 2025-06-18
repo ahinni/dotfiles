@@ -291,3 +291,120 @@ function weather {
   local location="${1:-}"
   curl -s "wttr.in/${location}?format=3"
 }
+
+# =============================================================================
+# Starship Prompt Toggle Functions
+# =============================================================================
+
+# Get the directory where starship configs are stored
+STARSHIP_CONFIG_DIR="$HOME/.zsh"
+
+# Function to switch to full prompt (default)
+function prompt-full {
+    export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship.toml"
+    echo "🚀 Switched to FULL prompt configuration"
+    echo "   Features: Time, Git, Languages, Cloud tools, System info"
+    # Re-initialize starship with new config
+    if command -v starship &> /dev/null; then
+        eval "$(starship init zsh)"
+        # Force prompt refresh
+        zle && zle reset-prompt
+    fi
+}
+
+# Function to switch to minimal prompt
+function prompt-minimal {
+    export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-minimal.toml"
+    echo "📦 Switched to MINIMAL prompt configuration"
+    echo "   Features: Hostname, Directory, Basic git info"
+    # Re-initialize starship with new config
+    if command -v starship &> /dev/null; then
+        eval "$(starship init zsh)"
+        # Force prompt refresh
+        zle && zle reset-prompt
+    fi
+}
+
+# Function to switch to single-line prompt
+function prompt-single {
+    export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-single.toml"
+    echo "➡️  Switched to SINGLE-LINE prompt configuration"
+    echo "   Features: Directory, Git status on one line"
+    # Re-initialize starship with new config
+    if command -v starship &> /dev/null; then
+        eval "$(starship init zsh)"
+        # Force prompt refresh
+        zle && zle reset-prompt
+    fi
+}
+
+# Function to switch to super minimal prompt
+function prompt-super-minimal {
+    export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-super-minimal.toml"
+    echo "⚡ Switched to SUPER MINIMAL prompt configuration"
+    echo "   Features: Just directory and prompt symbol"
+    # Re-initialize starship with new config
+    if command -v starship &> /dev/null; then
+        eval "$(starship init zsh)"
+        # Force prompt refresh
+        zle && zle reset-prompt
+    fi
+}
+
+# Function to reset to default configuration
+function prompt-reset {
+    unset STARSHIP_CONFIG
+    echo "🔄 Reset to DEFAULT Starship configuration"
+    echo "   Using: ~/.config/starship.toml (if exists) or built-in defaults"
+    # Re-initialize starship with new config
+    if command -v starship &> /dev/null; then
+        eval "$(starship init zsh)"
+        # Force prompt refresh
+        zle && zle reset-prompt
+    fi
+}
+
+# Function to show current prompt configuration
+function prompt-status {
+    echo "Current Starship configuration:"
+    if [[ -n "$STARSHIP_CONFIG" ]]; then
+        echo "  📁 Config file: $STARSHIP_CONFIG"
+        local config_name=$(basename "$STARSHIP_CONFIG" .toml)
+        case "$config_name" in
+            "starship")
+                echo "  🚀 Mode: FULL (default dotfiles config)"
+                ;;
+            "starship-minimal")
+                echo "  📦 Mode: MINIMAL"
+                ;;
+            "starship-single")
+                echo "  ➡️  Mode: SINGLE-LINE"
+                ;;
+            "starship-super-minimal")
+                echo "  ⚡ Mode: SUPER MINIMAL"
+                ;;
+            *)
+                echo "  ❓ Mode: CUSTOM ($config_name)"
+                ;;
+        esac
+    else
+        echo "  🔄 Using default Starship configuration"
+        echo "  📁 Config file: ~/.config/starship.toml (if exists) or built-in"
+    fi
+}
+
+# Function to list available prompt configurations
+function prompt-list {
+    echo "Available Starship prompt configurations:"
+    echo ""
+    echo "🚀 prompt-full          - Full-featured prompt (time, git, languages, etc.)"
+    echo "📦 prompt-minimal       - Minimal prompt (hostname, directory, basic git)"
+    echo "➡️  prompt-single        - Single-line prompt (directory and git only)"
+    echo "⚡ prompt-super-minimal - Super minimal (directory and prompt symbol only)"
+    echo "🔄 prompt-reset         - Reset to default Starship configuration"
+    echo ""
+    echo "ℹ️  prompt-status        - Show current configuration"
+    echo "📋 prompt-list          - Show this list"
+}
+
+
