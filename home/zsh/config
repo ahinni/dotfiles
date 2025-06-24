@@ -34,7 +34,7 @@ fi
 # =============================================================================
 
 # Navigation
-setopt AUTO_CD              # Auto cd to directory if command is a directory
+# setopt AUTO_CD              # Auto cd to directory if command is a directory (disabled - prefer explicit commands)
 setopt AUTO_PUSHD           # Push directories to stack automatically
 setopt PUSHD_IGNORE_DUPS    # Don't push duplicate directories
 setopt PUSHD_MINUS          # Use - instead of + for directory stack
