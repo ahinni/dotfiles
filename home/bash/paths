@@ -19,6 +19,11 @@ if [[ -d "/usr/local/bin" ]]; then
 fi
 
 # Language-specific paths (dynamic detection)
+# Go
+if [[ -d "$HOME/go/bin" ]]; then
+  export PATH="$HOME/go/bin:$PATH"
+fi
+
 # Ruby (use current ruby installation, not hardcoded version)
 if command -v ruby &> /dev/null && command -v gem &> /dev/null; then
   RUBY_GEM_PATH=$(gem environment gempath | cut -d: -f1)
