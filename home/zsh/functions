@@ -407,4 +407,48 @@ function prompt-list {
     echo "📋 prompt-list          - Show this list"
 }
 
+# =============================================================================
+# History Functions
+# =============================================================================
+
+# History search function (like history | grep but better)
+function hgrep {
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: hgrep <search_term>"
+    echo "Example: hgrep git"
+    return 1
+  fi
+  fc -l 1 | grep -i "$@"
+}
+
+# Function to reload history (useful for troubleshooting)
+function reload_history {
+  if [[ -r "${HISTFILE}" ]]; then
+    fc -R "${HISTFILE}" 2>/dev/null && echo "History reloaded successfully." || echo "Failed to reload history."
+    echo "Current count: $(history | wc -l)"
+    echo "History file lines: $(wc -l < "${HISTFILE}" 2>/dev/null || echo "unknown")"
+  else
+    echo "History file ${HISTFILE} not found or not readable."
+  fi
+}
+
+# Function to force save current session history
+function save_history {
+  fc -W "${HISTFILE}"
+  echo "History saved to ${HISTFILE}"
+}
+
+# Function to ensure history is properly loaded (workaround for SHARE_HISTORY issues)
+function ensure_history_loaded {
+  if [[ -r "${HISTFILE}" ]]; then
+    local current_hist_count=$(history | wc -l | tr -d ' ')
+    local file_line_count=$(wc -l < "${HISTFILE}" 2>/dev/null | tr -d ' ')
+
+    # If current session has significantly fewer commands than the file, load it
+    if [[ $current_hist_count -lt 50 && $file_line_count -gt 100 ]]; then
+      fc -R "${HISTFILE}" 2>/dev/null || true
+    fi
+  fi
+}
+
 

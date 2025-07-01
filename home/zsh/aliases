@@ -179,4 +179,21 @@ fi
 alias ff='find . -name'
 alias fd='find . -type d -name'
 
+# =============================================================================
+# History Aliases (Enhanced history commands)
+# =============================================================================
+
+# Full history command (shows all history, not just recent)
+alias hist='fc -l 1'
+alias history-all='fc -l 1'
+
+# Show recent history (equivalent to default history command)
+alias hist-recent='fc -l -50'
+
+# Show history with timestamps (if EXTENDED_HISTORY is enabled)
+alias hist-time='fc -l -t "%Y-%m-%d %H:%M:%S" 1'
+
+# Manual history reload command
+alias fix-history='ensure_history_loaded && echo "History loading attempted. Current count: $(fc -l 1 | wc -l)"'
+
 

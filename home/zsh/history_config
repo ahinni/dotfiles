@@ -49,3 +49,21 @@ fi
 hist_top() {
   history | awk '{print $2}' | sort | uniq -c | sort -rn | head -20
 }
+
+# =============================================================================
+# History Loading and Management
+# =============================================================================
+
+
+
+# =============================================================================
+# Workaround for SHARE_HISTORY not loading existing history in new sessions
+# =============================================================================
+
+# Call the ensure_history_loaded function when this config is sourced
+# (Function is defined in ~/.zsh/functions)
+if typeset -f ensure_history_loaded > /dev/null; then
+  ensure_history_loaded
+fi
+
+
