@@ -61,6 +61,11 @@ alias gemdir='cd `rvm gemdir`/gems'
 alias irb='irb --readline -r irb/completion'
 alias rc='rails console'
 
+# Node/NVM aliases
+alias nls='nvm list'
+alias nst='node-status'
+alias nrc='nvmrc-create'
+
 # Node.js aliases
 alias ni='npm install'
 alias nid='npm install --save-dev'

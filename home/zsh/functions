@@ -293,6 +293,43 @@ function weather {
 }
 
 # =============================================================================
+# Node Version Management Functions
+# =============================================================================
+
+# Create .nvmrc file with current or specified version
+function nvmrc-create {
+  local version="${1:-$(node --version)}"
+  echo "$version" > .nvmrc
+  echo "📝 Created .nvmrc with Node $version"
+}
+
+# Show current Node version and .nvmrc status
+function node-status {
+  echo "🤖 Current Node version: $(node --version)"
+  echo "📍 NVM default: $(nvm version default)"
+
+  if [[ -f .nvmrc ]]; then
+    local nvmrc_version=$(cat .nvmrc)
+    echo "📄 .nvmrc specifies: $nvmrc_version"
+
+    if [[ "$(nvm version)" == "$(nvm version "$nvmrc_version")" ]]; then
+      echo "✅ Currently using .nvmrc version"
+    else
+      echo "⚠️  Not using .nvmrc version (run 'nvm use' to switch)"
+    fi
+  else
+    echo "📄 No .nvmrc file in current directory"
+  fi
+}
+
+# Quick switch to common Node versions
+function node16 { nvm use 16; }
+function node18 { nvm use 18; }
+function node20 { nvm use 20; }
+function node22 { nvm use 22; }
+function node-default { nvm use default; }
+
+# =============================================================================
 # Starship Prompt Toggle Functions
 # =============================================================================
 
