@@ -202,3 +202,11 @@ alias hist-time='fc -l -t "%Y-%m-%d %H:%M:%S" 1'
 alias fix-history='ensure_history_loaded && echo "History loading attempted. Current count: $(fc -l 1 | wc -l)"'
 
 
+# RDS Portal Dev DBs
+alias portaldb-dev-us1='PGPASSWORD=$(dbpass dev marketspace us1) psql postgres://marketspace@marketspace-dev-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
+alias portaldb-dev-eu1='PGPASSWORD=$(dbpass dev marketspace eu1) psql postgres://marketspace@marketspace-dev-eu1-db1.cluster-cbyuiybwaltq.eu-central-1.rds.amazonaws.com/marketspace'
+
+# RDS Portal Staging DBs
+alias portaldb-staging-us1='PGPASSWORD=$(dbpass staging marketspace us1) psql postgres://marketspace@marketspace-staging-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
+
+alias portaldb-prod-us1='PGPASSWORD=$(dbpass staging marketspace us1) psql postgres://marketspace@marketspace-prod-s1-db1.cluster-cciju4ert9tx.us-east-2.rds.amazonaws.com/marketspace'
