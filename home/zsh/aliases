@@ -55,11 +55,11 @@ alias vi='nvim'
 # Development Aliases
 # =============================================================================
 
-alias bake='bundle exec rake'
-alias bru='brew update && brew outdated'
-alias gemdir='cd `rvm gemdir`/gems'
-alias irb='irb --readline -r irb/completion'
-alias rc='rails console'
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias bru='brew update && brew outdated'
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  alias bru='sudo apt update && sudo apt list --upgradable'
+fi
 
 # Node/NVM aliases
 alias nls='nvm list'
