@@ -110,34 +110,37 @@ _track() {
 }
 compdef _track track
 
-# Completion for kubeshell function
-_kubeshell() {
-  if (( CURRENT == 2 )); then
-    # Complete app names from current context
-    local apps
-    apps=(${(f)"$(kubectl get pods -o jsonpath='{.items[*].metadata.labels.app\.kubernetes\.io/name}' 2>/dev/null | tr ' ' '\n' | sort -u)"})
-    _describe 'apps' apps
-  elif (( CURRENT == 3 )); then
-    # Complete contexts
+# Kubectl-dependent custom completions (only if kubectl is available)
+if command -v kubectl &> /dev/null; then
+  # Completion for kubeshell function
+  _kubeshell() {
+    if (( CURRENT == 2 )); then
+      # Complete app names from current context
+      local apps
+      apps=(${(f)"$(kubectl get pods -o jsonpath='{.items[*].metadata.labels.app\.kubernetes\.io/name}' 2>/dev/null | tr ' ' '\n' | sort -u)"})
+      _describe 'apps' apps
+    elif (( CURRENT == 3 )); then
+      # Complete contexts
+      local contexts
+      contexts=(${(f)"$(kubectl config get-contexts -o name 2>/dev/null)"})
+      _describe 'contexts' contexts
+    elif (( CURRENT == 4 )); then
+      # Complete namespaces
+      local namespaces
+      namespaces=(${(f)"$(kubectl get namespaces -o name 2>/dev/null | sed 's/namespace\///')"})
+      _describe 'namespaces' namespaces
+    fi
+  }
+  compdef _kubeshell kubeshell
+
+  # Completion for kc (kubectl context) function
+  _kc() {
     local contexts
     contexts=(${(f)"$(kubectl config get-contexts -o name 2>/dev/null)"})
     _describe 'contexts' contexts
-  elif (( CURRENT == 4 )); then
-    # Complete namespaces
-    local namespaces
-    namespaces=(${(f)"$(kubectl get namespaces -o name 2>/dev/null | sed 's/namespace\///')"})
-    _describe 'namespaces' namespaces
-  fi
-}
-compdef _kubeshell kubeshell
-
-# Completion for kc (kubectl context) function
-_kc() {
-  local contexts
-  contexts=(${(f)"$(kubectl config get-contexts -o name 2>/dev/null)"})
-  _describe 'contexts' contexts
-}
-compdef _kc kc
+  }
+  compdef _kc kc
+fi
 
 # =============================================================================
 # Enhanced Completion Behavior

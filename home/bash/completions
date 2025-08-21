@@ -1,9 +1,24 @@
+# =============================================================================
+# Bash Completions Configuration
+# =============================================================================
+
+# Legacy completions (commented out - may need cleanup)
 #source ~/.bash/completion_scripts/git_completion
+
+# Custom completions
 source ~/.bash/completion_scripts/npm_completion
 complete -C ~/.bash/completion_scripts/rake_completion -o default rake
 complete -C ~/.bash/completion_scripts/project_completion -o default c
 complete -C ~/.bash/completion_scripts/capistrano_completion -o default cap
 complete -C ~/.bash/completion_scripts/paws_completion -o default paws
 
-source <(kubectl completion bash)
-complete -o default -F __start_kubectl k
+# =============================================================================
+# Tool-Specific Completions (Conditional Loading)
+# =============================================================================
+
+# Kubectl completions (only if kubectl is installed)
+if command -v kubectl &> /dev/null; then
+  source <(kubectl completion bash)
+  # Also complete for k alias
+  complete -o default -F __start_kubectl k
+fi
