@@ -5,6 +5,7 @@ vim/doc/tags-ja
 # Sensitive .config directories (never commit these)
 home/config/op/
 home/config/configstore/
+home/config/gh/
 
 # Backup files
 *.backup.*
