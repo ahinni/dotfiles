@@ -18,11 +18,12 @@ if [[ -d "/usr/local/bin" ]]; then
   export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
 fi
 
-# Language-specific paths (dynamic detection)
-# Go
-if [[ -d "$HOME/go/bin" ]]; then
-  export PATH="$HOME/go/bin:$PATH"
-fi
+# Go environment
+# System Go install
+[ -d "/usr/local/go/bin" ] && export PATH="/usr/local/go/bin:$PATH"
+
+# User-installed Go tools (via `go install`)
+[ -d "$HOME/go/bin" ] && export PATH="$HOME/go/bin:$PATH"
 
 # Ruby (use current ruby installation, not hardcoded version)
 if command -v ruby &> /dev/null && command -v gem &> /dev/null; then
