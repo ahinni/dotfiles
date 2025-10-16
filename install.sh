@@ -3,6 +3,27 @@
 # Get the absolute path of the dotfiles directory
 DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Initialize git submodules if needed
+init_submodules() {
+  if [ -f "$DOTFILES_DIR/.gitmodules" ]; then
+    echo "🔗 Initializing git submodules..."
+    cd "$DOTFILES_DIR"
+
+    # Check if submodules are already initialized
+    if [ ! -d "$DOTFILES_DIR/vscode/defaults/.git" ]; then
+      git submodule update --init --recursive
+      if [ $? -eq 0 ]; then
+        echo "✅ Git submodules initialized"
+      else
+        echo "⚠️  Failed to initialize git submodules"
+        echo "   You can try manually: git submodule update --init"
+      fi
+    else
+      echo "✅ Git submodules already initialized"
+    fi
+  fi
+}
+
 # Function to link a file from home/ directory
 link_file() {
   local source_path=$1
@@ -140,7 +161,56 @@ install_dotfiles() {
   mkdir -p ~/.tmp
 }
 
+# Function to set up VS Code keybindings
+setup_vscode_keybindings() {
+  local vscode_keybindings_script="$DOTFILES_DIR/scripts/sync-vscode-keybindings.sh"
+
+  if [ ! -f "$vscode_keybindings_script" ]; then
+    echo "⚠️  VS Code keybindings script not found: $vscode_keybindings_script"
+    return 1
+  fi
+
+  echo ""
+  echo "🎮 Setting up VS Code keybindings..."
+
+  # On macOS, symlink the keybindings file
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    local macos_vscode_dir="$HOME/Library/Application Support/Code/User"
+    local custom_keybindings="$DOTFILES_DIR/vscode/keybindings.json"
+
+    # Create the directory if it doesn't exist
+    if [ ! -d "$macos_vscode_dir" ]; then
+      echo "📁 Creating $macos_vscode_dir"
+      mkdir -p "$macos_vscode_dir"
+    fi
+
+    # Symlink the keybindings file
+    local target_keybindings="$macos_vscode_dir/keybindings.json"
+    if [ -e "$target_keybindings" ] && [ ! -L "$target_keybindings" ]; then
+      local backup_path="${target_keybindings}.backup.$(date +%Y%m%d_%H%M%S)"
+      echo "📦 Backing up existing keybindings to $backup_path"
+      mv "$target_keybindings" "$backup_path"
+    fi
+
+    if [ -L "$target_keybindings" ] && [ "$(readlink "$target_keybindings")" = "$custom_keybindings" ]; then
+      echo "✅ VS Code keybindings already symlinked correctly"
+    else
+      echo "🔗 Symlinking VS Code keybindings"
+      ln -sf "$custom_keybindings" "$target_keybindings"
+      echo "✅ VS Code keybindings symlinked"
+    fi
+  else
+    # On Linux, run the sync script
+    echo "🐧 Running keybindings sync for Linux..."
+    bash "$vscode_keybindings_script"
+  fi
+}
+
 # Run the installation
+init_submodules
 install_dotfiles
+
+# Set up VS Code keybindings
+setup_vscode_keybindings
 
 echo "Dotfiles installation complete!"

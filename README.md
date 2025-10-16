@@ -25,11 +25,14 @@ brew install zoxide bat exa
 ```bash
 git clone https://github.com/ahinni/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
+git submodule update --init  # Initialize git submodules (VS Code defaults)
 ./install.sh
 
 # Switch to zsh (if not already default)
 chsh -s $(which zsh)
 ```
+
+**Note:** The `git submodule update --init` step is optional but recommended. The `install.sh` script will handle it automatically, but you can also run it manually to initialize submodules before installation.
 
 ## Repository Structure
 
@@ -38,6 +41,7 @@ This repository uses a clean, organized structure that separates project files f
 ```
 dotfiles/
 ├── README.md                    # Project documentation
+├── VSCODE_KEYBINDINGS.md       # VS Code keybindings management
 ├── install.sh                   # Installation script
 ├── test-dotfiles.sh            # Docker testing script
 ├── .ai/                         # Task management
@@ -56,6 +60,11 @@ dotfiles/
 │   └── config/                 # XDG config directories
 │       ├── nvim/               # Neovim configuration
 │       └── gh/                 # GitHub CLI config
+├── vscode/                     # VS Code keybindings management
+│   ├── keybindings.json        # Custom keybindings (source of truth)
+│   └── defaults/               # Git submodule: default macOS keybindings
+├── scripts/                    # Utility scripts
+│   └── sync-vscode-keybindings.sh  # Sync VS Code keybindings
 └── archive/                    # 📦 ARCHIVED CONFIGS
     ├── oh-my-zsh/             # Legacy zsh setup
     ├── janus/                 # Legacy vim setup
@@ -71,6 +80,7 @@ This dotfiles repository includes configurations for:
 - **Git** - Global gitconfig and gitignore settings with enhanced aliases
 - **Vim/Neovim** - Editor configurations (active and archived)
 - **Tmux** - Terminal multiplexer configuration
+- **VS Code** - Custom keybindings with cross-platform support (macOS symlink, Linux merge)
 - **Various tools** - ack, jshint, rails, irb, kubectl, docker, and more
 - **XDG Config** - Support for ~/.config subdirectories
 
@@ -82,6 +92,8 @@ This dotfiles repository includes configurations for:
 - **Modular**: Easy to add or remove specific configurations
 - **XDG Config Support**: Handles ~/.config subdirectories properly
 - **Cross-platform**: Works on macOS and Linux
+- **Git Submodules**: Manages external dependencies (e.g., VS Code defaults)
+- **VS Code Keybindings**: Automatic setup with platform-specific handling
 - **Docker Testing**: Test installations safely in containers
 
 ## Usage
@@ -98,6 +110,36 @@ The installation script will:
 - `n` - No, skip this file
 - `a` - Yes to all remaining files
 - `q` - Quit installation
+
+### VS Code Keybindings
+
+VS Code keybindings are automatically set up during installation:
+
+- **macOS**: Keybindings are symlinked to `~/Library/Application Support/Code/User/keybindings.json`
+- **Linux**: Keybindings are merged with default macOS keybindings and written to `~/.config/Code/User/keybindings.json`
+
+To manually sync keybindings on Linux or check status on macOS:
+```bash
+./scripts/sync-vscode-keybindings.sh
+```
+
+For more details, see [VSCODE_KEYBINDINGS.md](VSCODE_KEYBINDINGS.md).
+
+### Managing Git Submodules
+
+This repository uses git submodules for external dependencies (e.g., VS Code default keybindings).
+
+**After cloning:**
+```bash
+git submodule update --init
+```
+
+**To update submodules to latest versions:**
+```bash
+git submodule update --remote
+```
+
+The `install.sh` script will automatically initialize submodules if needed.
 
 ### Testing Before Installation
 
