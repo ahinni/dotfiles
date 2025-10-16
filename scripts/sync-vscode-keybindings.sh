@@ -9,6 +9,8 @@ set -e
 DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 CUSTOM_KEYBINDINGS="$DOTFILES_DIR/vscode/keybindings.json"
 DEFAULTS_KEYBINDINGS="$DOTFILES_DIR/vscode/defaults/macos.keybindings.json"
+LINUX_KEYBINDINGS="$DOTFILES_DIR/vscode/keybindings-linux.json"
+VSCODE_KEYBINDINGS_LINK="$HOME/.config/Code/User/keybindings.json"
 
 # Platform detection
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -27,34 +29,53 @@ strip_json_comments() {
     ' "$file"
 }
 
-# Helper function to extract keybinding keys from JSON
-# Returns a sorted list of "key" values
-extract_keys() {
-    local file=$1
-    strip_json_comments "$file" | jq -r '.[] | .key' 2>/dev/null | sort || echo ""
-}
-
-# Helper function to merge JSON arrays, with later entries overriding earlier ones
-# Usage: merge_json_arrays defaults.json custom.json output.json
-merge_json_arrays() {
+# Helper function to merge defaults with custom keybindings
+# Creates a single JSON array with defaults, then custom keybindings separated by a comment
+merge_keybindings_files() {
     local defaults=$1
     local custom=$2
     local output=$3
 
-    # Use jq to merge: start with defaults, then add custom (which override by key)
-    # Strip comments from both files before merging
-    jq -s '
-        (.[0] | map({key: .key, value: .})) as $defaults |
-        (.[1] | map({key: .key, value: .})) as $custom |
-        ($defaults | map(.key) + ($custom | map(.key)) | unique) as $all_keys |
-        [
-            $all_keys[] as $k |
-            (
-                ($custom | map(select(.key == $k)) | .[0].value) //
-                ($defaults | map(select(.key == $k)) | .[0].value)
-            )
-        ]
-    ' <(strip_json_comments "$defaults") <(strip_json_comments "$custom") > "$output"
+    local temp_file=$(mktemp)
+    local temp_with_comments=$(mktemp)
+
+    # Start with opening bracket
+    echo "[" > "$temp_with_comments"
+
+    # Add defaults (strip comments, remove outer brackets and blank lines)
+    strip_json_comments "$defaults" | sed '/^[[:space:]]*$/d' | sed '1d;$d' >> "$temp_with_comments"
+
+    # Add separator comment
+    echo "  // ============================================" >> "$temp_with_comments"
+    echo "  // Custom keybindings from vscode/keybindings.json" >> "$temp_with_comments"
+    echo "  // ============================================" >> "$temp_with_comments"
+
+    # Add custom keybindings (strip comments and remove outer brackets)
+    if [ -s "$custom" ]; then
+        local custom_count=$(strip_json_comments "$custom" | jq 'length' 2>/dev/null || echo 0)
+        if [ "$custom_count" -gt 0 ]; then
+            echo "," >> "$temp_with_comments"
+            strip_json_comments "$custom" | sed '1d;$d' >> "$temp_with_comments"
+        fi
+    fi
+
+    # Close the array
+    echo "]" >> "$temp_with_comments"
+
+    # Strip comments from the file to validate JSON
+    strip_json_comments "$temp_with_comments" > "$temp_file"
+
+    # Validate the JSON
+    if ! jq empty "$temp_file" 2>/dev/null; then
+        echo "❌ Failed to create valid JSON during merge"
+        rm "$temp_file" "$temp_with_comments"
+        return 1
+    fi
+
+    # Write the version with comments to output
+    cp "$temp_with_comments" "$output"
+    rm "$temp_file" "$temp_with_comments"
+    return 0
 }
 
 # Check for newer versions of the defaults submodule
@@ -137,89 +158,60 @@ sync_keybindings() {
     # Linux: Merge defaults with custom
     echo "🐧 Linux detected - merging keybindings..."
 
+    # Merge defaults with custom and write to the generated Linux keybindings file
+    echo "🔗 Merging defaults with custom keybindings..."
+
+    if ! merge_keybindings_files "$DEFAULTS_KEYBINDINGS" "$CUSTOM_KEYBINDINGS" "$LINUX_KEYBINDINGS"; then
+        exit 1
+    fi
+
+    echo "✅ Generated $LINUX_KEYBINDINGS"
+    echo ""
+    echo "📊 Summary:"
+    local defaults_count=$(strip_json_comments "$DEFAULTS_KEYBINDINGS" | jq 'length')
+    local custom_count=$(jq 'length' "$CUSTOM_KEYBINDINGS")
+    local final_count=$(strip_json_comments "$LINUX_KEYBINDINGS" | jq 'length')
+    echo "   Defaults: $defaults_count keybindings"
+    echo "   Custom: $custom_count keybindings"
+    echo "   Final: $final_count keybindings"
+    echo ""
+
+    # Create symlink from ~/.config/Code/User/keybindings.json to the generated file
+    echo "🔗 Setting up symlink..."
+    local config_dir=$(dirname "$VSCODE_KEYBINDINGS_LINK")
+
     # Create .config/Code/User if it doesn't exist
-    local config_dir=$(dirname "$VSCODE_KEYBINDINGS")
     if [ ! -d "$config_dir" ]; then
         echo "📁 Creating $config_dir"
         mkdir -p "$config_dir"
     fi
 
-    # Check for local modifications
-    if [ -f "$VSCODE_KEYBINDINGS" ]; then
-        echo ""
-        echo "🔍 Checking for local modifications..."
-
-        # Extract keys from all three sources
-        local custom_keys=$(extract_keys "$CUSTOM_KEYBINDINGS")
-        local current_keys=$(extract_keys "$VSCODE_KEYBINDINGS")
-
-        # Find keys in current that aren't in custom (local modifications)
-        local local_mods=$(comm -23 <(echo "$current_keys") <(echo "$custom_keys"))
-
-        if [ -n "$local_mods" ]; then
-            echo "⚠️  Found local keybindings not in source control:"
-            echo "$local_mods" | sed 's/^/   - /'
-            echo ""
-
-            # Prompt user
-            read -p "Merge these into vscode/keybindings.json? (y/n) " -n 1 -r
-            echo ""
-
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                echo "📝 Merging local modifications into $CUSTOM_KEYBINDINGS"
-
-                # Create a temporary merged file with local mods
-                local temp_merged=$(mktemp)
-                jq -s '
-                    (.[0] | map({key: .key, value: .})) as $custom |
-                    (.[1] | map({key: .key, value: .})) as $current |
-                    ($custom | map(.key) + ($current | map(.key)) | unique) as $all_keys |
-                    [
-                        $all_keys[] as $k |
-                        (
-                            ($current | map(select(.key == $k)) | .[0].value) //
-                            ($custom | map(select(.key == $k)) | .[0].value)
-                        )
-                    ]
-                ' "$CUSTOM_KEYBINDINGS" "$VSCODE_KEYBINDINGS" > "$temp_merged"
-
-                # Update the custom keybindings file
-                cp "$temp_merged" "$CUSTOM_KEYBINDINGS"
-                rm "$temp_merged"
-
-                echo "✅ Updated $CUSTOM_KEYBINDINGS"
-                echo "   Review with: git diff vscode/keybindings.json"
-            else
-                echo "⏭️  Skipping merge. Local modifications will be overwritten."
-            fi
-            echo ""
+    # Handle existing file/symlink
+    if [ -L "$VSCODE_KEYBINDINGS_LINK" ]; then
+        # It's a symlink, check if it points to the right place
+        local current_target=$(readlink "$VSCODE_KEYBINDINGS_LINK")
+        if [ "$current_target" = "$LINUX_KEYBINDINGS" ]; then
+            echo "✅ Symlink already correct: $VSCODE_KEYBINDINGS_LINK -> $LINUX_KEYBINDINGS"
         else
-            echo "✅ No local modifications found"
+            echo "⚠️  Symlink points to wrong location: $current_target"
+            echo "   Updating to: $LINUX_KEYBINDINGS"
+            rm "$VSCODE_KEYBINDINGS_LINK"
+            ln -s "$LINUX_KEYBINDINGS" "$VSCODE_KEYBINDINGS_LINK"
+            echo "✅ Symlink updated"
         fi
+    elif [ -f "$VSCODE_KEYBINDINGS_LINK" ]; then
+        # It's a regular file, back it up and create symlink
+        echo "⚠️  Found existing keybindings.json file (not a symlink)"
+        local backup_file="$VSCODE_KEYBINDINGS_LINK.backup.$(date +%s)"
+        echo "   Backing up to: $backup_file"
+        mv "$VSCODE_KEYBINDINGS_LINK" "$backup_file"
+        ln -s "$LINUX_KEYBINDINGS" "$VSCODE_KEYBINDINGS_LINK"
+        echo "✅ Created symlink: $VSCODE_KEYBINDINGS_LINK -> $LINUX_KEYBINDINGS"
+    else
+        # File doesn't exist, create symlink
+        ln -s "$LINUX_KEYBINDINGS" "$VSCODE_KEYBINDINGS_LINK"
+        echo "✅ Created symlink: $VSCODE_KEYBINDINGS_LINK -> $LINUX_KEYBINDINGS"
     fi
-
-    # Merge defaults with custom and write to VS Code config
-    echo "🔗 Merging defaults with custom keybindings..."
-    local temp_merged=$(mktemp)
-    merge_json_arrays "$DEFAULTS_KEYBINDINGS" "$CUSTOM_KEYBINDINGS" "$temp_merged"
-
-    # Validate the merged JSON
-    if ! jq empty "$temp_merged" 2>/dev/null; then
-        echo "❌ Failed to create valid JSON"
-        rm "$temp_merged"
-        exit 1
-    fi
-
-    # Write to VS Code config
-    cp "$temp_merged" "$VSCODE_KEYBINDINGS"
-    rm "$temp_merged"
-
-    echo "✅ Keybindings synced to $VSCODE_KEYBINDINGS"
-    echo ""
-    echo "📊 Summary:"
-    echo "   Defaults: $(jq 'length' "$DEFAULTS_KEYBINDINGS") keybindings"
-    echo "   Custom: $(jq 'length' "$CUSTOM_KEYBINDINGS") keybindings"
-    echo "   Final: $(jq 'length' "$VSCODE_KEYBINDINGS") keybindings"
     echo ""
 
     # Check for updates to the defaults submodule
