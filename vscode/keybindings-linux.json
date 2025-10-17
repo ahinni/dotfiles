@@ -2241,6 +2241,11 @@
   {
     "key": "ctrl+f",
     "command": "-workbench.action.terminal.focusFind",
-    "when": "(terminalFindFocused && terminalHasBeenCreated || terminalFindFocused && terminalProcessSupported || terminalFocusInAny && terminalHasBeenCreated || terminalFocusInAny && terminalProcessSupported) && isLinux"
+    "when": "(terminalFindFocused && terminalHasBeenCreated || terminalFindFocused && terminalProcessSupported || terminalFocusInAny && terminalHasBeenCreated || terminalFocusInAny && terminalProcessSupported) && !isMac"
+  },
+  {
+    "key": "ctrl+e",
+    "command": "-workbench.action.quickOpen",
+    "when": "!isMac"
   }
 ]
