@@ -30,5 +30,10 @@
   {
     "key": "ctrl+shift+x",
     "command": "workbench.action.terminal.toggleTerminal"
+  },
+  {
+    "key": "ctrl+f",
+    "command": "-workbench.action.terminal.focusFind",
+    "when": "(terminalFindFocused && terminalHasBeenCreated || terminalFindFocused && terminalProcessSupported || terminalFocusInAny && terminalHasBeenCreated || terminalFocusInAny && terminalProcessSupported) && isLinux"
   }
 ]
