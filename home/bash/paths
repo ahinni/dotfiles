@@ -28,6 +28,9 @@ fi
 # Needed for Claude Code, but likely other things
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 
+# Antigravity
+[ -d "$HOME/.antigravity/antigravity/bin" ] && export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
 # Ruby (use current ruby installation, not hardcoded version)
 if command -v ruby &> /dev/null && command -v gem &> /dev/null; then
   RUBY_GEM_PATH=$(gem environment gempath | cut -d: -f1)
