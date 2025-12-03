@@ -213,4 +213,9 @@ install_dotfiles
 # Set up VS Code keybindings
 setup_vscode_keybindings
 
+# Set up GNOME keybindings (silently skips on non-GNOME systems)
+if [ -x "$DOTFILES_DIR/scripts/setup-gnome-keybindings.sh" ]; then
+  "$DOTFILES_DIR/scripts/setup-gnome-keybindings.sh"
+fi
+
 echo "Dotfiles installation complete!"
