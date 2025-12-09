@@ -1,0 +1,17 @@
+# =============================================================================
+# Work Directory Aliases
+# =============================================================================
+# Add entries below as: _wd_alias name path
+
+_wd_alias() {
+  local name="$1"
+  local path="${2/#\~/$HOME}"
+  alias "$name"="cd $path"
+}
+
+_wd_alias d        ~/dotfiles
+_wd_alias notes    ~/work/ahinni/notes
+_wd_alias marketspace   ~/work/nuso/marketspace
+_wd_alias platform ~/work/nuso/platform
+
+unset -f _wd_alias

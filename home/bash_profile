@@ -10,6 +10,7 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Load bash configuration modules
 [[ -f ~/.bash/paths ]] && source ~/.bash/paths
+[[ -f ~/.bash/work_dirs ]] && source ~/.bash/work_dirs
 [[ -f ~/.bash/config ]] && source ~/.bash/config
 [[ -f ~/.bash/history_config ]] && source ~/.bash/history_config
 [[ -f ~/.bash/aliases ]] && source ~/.bash/aliases

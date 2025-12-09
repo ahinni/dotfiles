@@ -51,6 +51,9 @@ source ~/.zsh/config
 # Load PATH configuration (from bash, works for zsh too)
 source ~/.bash/paths
 
+# Load work directory aliases (shared with bash)
+source ~/.bash/work_dirs
+
 # Load general configuration (zsh-compatible parts only)
 # Note: Skip bash/config as it contains bash-specific commands
 

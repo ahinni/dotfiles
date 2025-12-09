@@ -21,7 +21,6 @@ alias u='cd ..'
 # =============================================================================
 
 alias ali='nvim ~/.bash/aliases'
-alias d='cd ~/dotfiles'
 alias so='source ~/.bash/aliases'
 alias vack='nvim ~/.ackrc'
 alias vi='nvim'
