@@ -11,6 +11,7 @@ _wd_alias() {
 
 _wd_alias d        ~/dotfiles
 _wd_alias notes    ~/work/ahinni/notes
+_wd_alias nuso   ~/work/nuso
 _wd_alias marketspace   ~/work/nuso/marketspace
 _wd_alias platform ~/work/nuso/platform
 

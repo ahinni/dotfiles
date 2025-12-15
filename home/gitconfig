@@ -47,3 +47,5 @@
 	#enabled = 1
 [pull]
 	rebase = false
+[init]
+	defaultBranch = master
