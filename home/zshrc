@@ -63,7 +63,8 @@ source ~/.bash/work_dirs
 # Load history configuration (zsh-specific version)
 source ~/.zsh/history_config
 
-# Load aliases (zsh-enhanced version)
+# Load aliases (shared first, then zsh-specific overrides)
+source ~/.shell/aliases
 source ~/.zsh/aliases
 
 # Load functions (zsh-enhanced version)

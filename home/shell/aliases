@@ -1,0 +1,169 @@
+# =============================================================================
+# Shared Shell Aliases (Bash & Zsh Compatible)
+# =============================================================================
+
+# =============================================================================
+# Platform-Specific Aliases
+# =============================================================================
+
+platform=$(uname)
+if [[ $platform == 'Linux' ]]; then
+  alias a='ls -lrth --color'
+  # Mimic macOS clipboard commands
+  alias pbcopy='xclip -selection clipboard'
+  alias pbpaste='xclip -selection clipboard -o'
+elif [[ $platform == 'Darwin' ]]; then
+  alias a='ls -lrthG'
+fi
+
+# Smart ls alias that works with both BSD ls (macOS) and GNU ls (Linux/homebrew)
+if ls --color=auto / >/dev/null 2>&1; then
+  alias ls='ls --color=auto'
+else
+  alias ls='ls -G'
+fi
+
+# Platform-specific package manager update
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias bru='brew update && brew outdated'
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  alias bru='sudo apt update && sudo apt list --upgradable'
+fi
+
+# =============================================================================
+# Navigation Aliases
+# =============================================================================
+
+alias c='clear'
+alias l='ls'
+alias ll='ls -la'
+alias u='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias -- -='cd -'
+
+# =============================================================================
+# Editor Aliases
+# =============================================================================
+
+alias vack='nvim ~/.ackrc'
+alias vi='nvim'
+
+# =============================================================================
+# Git Aliases
+# =============================================================================
+
+alias amend="git commit --amend"
+alias ga='git add'
+alias gad='git add .'
+alias gc='git commit'
+alias gca='git commit -a'
+alias gcaa='git commit -a --amend -C HEAD'
+alias gcl='git clone'
+alias gcm='git commit -m'
+alias gco='git checkout'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gf='git fetch && git status'
+alias gg='git lg'
+alias gl='git show --stat --oneline HEAD'
+alias gp='git push'
+alias gpr='hub pull-request'
+alias gr='git rebase'
+alias grc='git rebase --continue'
+alias gs='git status'
+alias gst='git status --short --branch'
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
+alias gtree='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
+alias gclean="git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print \$1}' | xargs git branch -d"
+alias master='git checkout master'
+alias main='git checkout main'
+alias gpatch='git format-patch HEAD^ --stdout > patch.diff'
+alias pr='hub pull-request'
+
+# =============================================================================
+# Development Aliases
+# =============================================================================
+
+# Ruby/Rails
+alias bake='bundle exec rake'
+alias gemdir='cd `rvm gemdir`/gems'
+alias irb='irb --readline -r irb/completion'
+alias rc='rails console'
+
+# Node.js/npm
+alias ni='npm install'
+alias nid='npm install --save-dev'
+alias nig='npm install -g'
+alias nis='npm install --save'
+alias nls='npm list'
+alias nod='npm outdated'
+alias nrm='npm remove'
+alias nrs='npm restart'
+alias nst='npm start'
+alias nt='npm test'
+alias nu='npm update'
+
+# =============================================================================
+# Utility Aliases
+# =============================================================================
+
+alias no='nvim ~/Dropbox/aaron/notes.txt'
+alias todo='nvim ~/Dropbox/aaron/todo.txt'
+alias remore='!! | more'
+alias rerake='!! && rake'
+alias retag='ctags -R --exclude=.svn --exclude=.git --exclude=log *'
+alias ts='ts "[%Y-%m-%d %H:%M:%.S]"'
+alias json2csv='jq -r '\''(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'\'
+
+# Enhanced utility aliases
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+
+# Quick file finding
+alias ff='find . -name'
+alias fd='find . -type d -name'
+
+# Quick directory jumping (if z is available)
+if command -v z &> /dev/null; then
+  alias j='z'
+fi
+
+# =============================================================================
+# Cloud/DevOps Aliases
+# =============================================================================
+
+alias k=kubectl
+alias docker-aws-login='aws --profile=nuso ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 651085182073.dkr.ecr.us-east-2.amazonaws.com'
+
+# Docker aliases
+alias dk='docker'
+alias dc='docker-compose'
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias di='docker images'
+alias drmi='docker rmi'
+alias drm='docker rm'
+
+# =============================================================================
+# Database Aliases
+# =============================================================================
+
+# RDS Portal Dev DBs
+alias portaldb-dev-us1='PGPASSWORD=$(dbpass dev marketspace us1) psql postgres://marketspace@marketspace-dev-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
+alias portaldb-dev-eu1='PGPASSWORD=$(dbpass dev marketspace eu1) psql postgres://marketspace@marketspace-dev-eu1-db1.cluster-cbyuiybwaltq.eu-central-1.rds.amazonaws.com/marketspace'
+
+# RDS Portal Dev DBs (Admin/Postgres superuser)
+alias portaldb-dev-us1-admin='PGPASSWORD=$(dbpass dev postgres us1) psql postgres://postgres@marketspace-dev-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/postgres'
+alias portaldb-dev-eu1-admin='PGPASSWORD=$(dbpass dev postgres eu1) psql postgres://postgres@marketspace-dev-eu1-db1.cluster-cbyuiybwaltq.eu-central-1.rds.amazonaws.com/postgres'
+
+# RDS Portal Staging DBs
+alias portaldb-staging-us1='PGPASSWORD=$(dbpass staging marketspace us1) psql postgres://marketspace@marketspace-staging-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
+
+alias portaldb-prod-us1='PGPASSWORD=$(dbpass staging marketspace us1) psql postgres://marketspace@marketspace-prod-s1-db1.cluster-cciju4ert9tx.us-east-2.rds.amazonaws.com/marketspace'

@@ -1,84 +1,12 @@
 # =============================================================================
-# System Aliases
+# Bash-Specific Aliases
 # =============================================================================
-
-# Handle the fact that this file will be used with multiple OSs
-platform=`uname`
-if [[ $platform == 'Linux' ]]; then
-  alias a='ls -lrth --color'
-elif [[ $platform == 'Darwin' ]]; then
-  alias a='ls -lrthG'
-fi
-
-alias c='clear'
-alias l='ls'
-alias ll='ls -la'
-alias ls='ls -G'
-alias u='cd ..'
+# Note: Common aliases are in ~/.shell/aliases
 
 # =============================================================================
 # Configuration Aliases
 # =============================================================================
 
 alias ali='nvim ~/.bash/aliases'
-alias so='source ~/.bash/aliases'
-alias vack='nvim ~/.ackrc'
-alias vi='nvim'
-
-# =============================================================================
-# Development Aliases
-# =============================================================================
-
-alias bake='bundle exec rake'
-alias bru='brew update && brew outdated'
-alias gemdir='cd `rvm gemdir`/gems'
-alias irb='irb --readline -r irb/completion'
-alias rc='rails console'
-
-# =============================================================================
-# Git Aliases
-# =============================================================================
-
-alias amend="git commit --amend"
-alias ga='git add'
-alias gad='git add .'
-alias gc='git commit'
-alias gca='git commit -a'
-alias gcaa='git commit -a --amend -C HEAD'
-alias gcl='git clone'
-alias gcm='git commit -m'
-alias gco='git checkout'
-alias gd='git diff'
-alias gdc='git diff --cached'
-alias gf='git fetch && git status'
-alias gg='git lg'
-alias gl='git show --stat --oneline HEAD'
-alias gp='git push'
-alias gpr='hub pull-request'
-alias gr='git rebase'
-alias grc='git rebase --continue'
-alias gs='git status'
-alias gtree='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
-alias gclean="git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d"
-alias master='git checkout master'
-alias gpatch='git format-patch HEAD^ --stdout > patch.diff'
-alias pr='hub pull-request'
-
-# =============================================================================
-# Utility Aliases
-# =============================================================================
-
-alias no='nvim ~/Dropbox/aaron/notes.txt'
-alias todo='nvim ~/Dropbox/aaron/todo.txt'
-alias remore='!! | more'
-alias rerake='!! && rake'
-alias retag='ctags -R --exclude=.svn --exclude=.git --exclude=log *'
-alias ts='ts "[%Y-%m-%d %H:%M:%.S]"'
-alias json2csv='jq -r '\''(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'\'
-
-# =============================================================================
-# Cloud/DevOps Aliases
-# =============================================================================
-
-alias k=kubectl
-alias docker-aws-login='aws --profile=nuso ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 651085182073.dkr.ecr.us-east-2.amazonaws.com'
+alias sali='nvim ~/.shell/aliases'
+alias so='source ~/.bash_profile'
