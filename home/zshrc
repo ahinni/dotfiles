@@ -48,6 +48,9 @@ source ~/.zsh/config
 # Load Modular Configurations
 # =============================================================================
 
+# Load shared shell functions (bash/zsh compatible)
+source ~/.shell/functions
+
 # Load PATH configuration (from bash, works for zsh too)
 source ~/.bash/paths
 

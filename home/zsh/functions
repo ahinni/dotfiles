@@ -1,216 +1,11 @@
 # =============================================================================
-# Ruby/Gem Functions
+# Zsh-Specific Functions
 # =============================================================================
-
-# Switch to a gem directory, trying to match your name the best
-function cdgem {
-  if ! command -v gem &> /dev/null; then
-    echo "Error: gem command not found"
-    return 1
-  fi
-
-  local gem_dir=$(gem env gemdir 2>/dev/null)
-  if [[ -z "$gem_dir" ]]; then
-    echo "Error: Could not determine gem directory"
-    return 1
-  fi
-
-  if [[ ! -d "$gem_dir/gems" ]]; then
-    echo "Error: Gems directory not found at $gem_dir/gems"
-    return 1
-  fi
-
-  cd "$gem_dir/gems" || return 1
-
-  if [[ -n "$1" ]]; then
-    local target=$(ls | grep "$1" | sort | tail -1)
-    if [[ -n "$target" ]]; then
-      cd "$target" || return 1
-    else
-      echo "No gem matching '$1' found"
-      return 1
-    fi
-  fi
-}
-
-function sgi {
-  sudo gem install "$1"
-}
-
-function glg {
-  gem list | grep "$1"
-}
-
-# =============================================================================
-# Rails Functions
-# =============================================================================
-
-function rrg {
-  bundle exec rake routes | grep "$1"
-}
-
-# =============================================================================
-# Git Functions
-# =============================================================================
-
-function parse_git_branch {
-  local val=$(git_branch_name | sed 's_\(.*\)_(\1)_')
-  echo "$val"
-}
-
-function git-new-remote-tracking {
-  if [[ -z "$1" ]]; then
-    echo "Usage: git-new-remote-tracking <branch-name>"
-    return 1
-  fi
-  git checkout -b "$1" && git push -u origin "$1"
-}
-
-function git_branch_name {
-  local val=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
-  echo "$val"
-}
-
-# Note: This function assumes a specific workflow. Consider simplifying or removing.
-function git-done {
-  local branch=$(git_branch_name)
-  if [[ -z "$branch" || "$branch" == "master" || "$branch" == "main" ]]; then
-    echo "Error: Not on a feature branch"
-    return 1
-  fi
-
-  echo "Warning: This will merge $branch into master and delete it. Continue? (y/N)"
-  read -r response
-  if [[ ! "$response" =~ ^[Yy]$ ]]; then
-    echo "Aborted"
-    return 1
-  fi
-
-  git checkout master && git pull --rebase && \
-  git checkout "$branch" && git rebase master && \
-  git checkout master && git merge "$branch" && \
-  bundle install && bundle exec rake db:migrate && bundle exec rake && \
-  git push && git branch -d "$branch" && git push origin :"$branch"
-}
-
-function git-nuke {
-  if [[ -z "$1" ]]; then
-    echo "Usage: git-nuke <branch-name>"
-    return 1
-  fi
-  git branch -D "$1" && git push origin :"$1"
-}
-
-# Creating a remote tracking branch
-function track {
-  if [[ -z "$1" ]]; then
-    echo "Usage: track <branch-name>"
-    return 1
-  fi
-  git branch --track "$1" "origin/$1"
-}
-
-function g {
-  if [[ $# > 0 ]]; then
-    git "$@"
-  else
-    git status
-  fi
-}
+# Note: Common functions have been moved to ~/.shell/functions
+# This file is for zsh-specific functions only
 
 # Zsh-specific git completion for g function
 compdef g=git
-
-# =============================================================================
-# Kubernetes Functions
-# =============================================================================
-
-# Switch kubectl context and show current contexts
-function kc () {
-  if [[ -n "$1" ]]; then
-    kubectl config use-context "$1"
-  fi
-  kubectl config get-contexts
-}
-
-# Get a shell in a kubernetes pod by app name
-function kubeshell() {
-  if [[ -z "$1" ]]; then
-    echo "Usage: kubeshell <app-name> [context] [namespace]"
-    return 1
-  fi
-
-  local ctxopts=""
-  local nsopts=""
-
-  if [[ -n "$2" ]]; then
-    ctxopts="--context $2"
-  fi
-
-  if [[ -n "$3" ]]; then
-    nsopts="-n $3"
-  fi
-
-  local pod=$(kubectl $ctxopts $nsopts get pod -l app.kubernetes.io/name="$1" -o name | head -1)
-
-  if [[ -z "$pod" ]]; then
-    echo "No pod found for app: $1"
-    return 1
-  fi
-
-  kubectl $ctxopts $nsopts exec -it "$pod" -- bash
-}
-
-# =============================================================================
-# AWS/Database Functions
-# =============================================================================
-
-# Get database password from AWS Secrets Manager
-function dbpass () {
-  if [[ $# -lt 1 ]]; then
-    echo "Usage: ${funcstack[1]} <env> [user] [region]"
-    echo
-    echo "  env     - Environment name (e.g., dev, prod)"
-    echo "  user    - Optional. One of: marketspace (default), recording, sidewinder"
-    echo "  region  - Optional. One of: us1 (default), eu1"
-    echo
-    echo "Examples:"
-    echo "  ${funcstack[1]} dev"
-    echo "  ${funcstack[1]} prod recording"
-    echo "  ${funcstack[1]} dev sidewinder eu1"
-    return 1
-  fi
-
-  local env="$1"
-  local user="${2:-marketspace}"
-  local region_code="${3:-us1}"
-
-  # Determine AWS region
-  local region
-  if [[ "$region_code" == "us1" && "$env" == "prod" ]]; then
-    region="us-east-2"
-  else
-    case "$region_code" in
-      us1) region="us-west-2" ;;
-      eu1) region="eu-central-1" ;;
-      *) echo "Unsupported region code: $region_code" >&2; return 1 ;;
-    esac
-  fi
-
-  # Determine secret key
-  local secret_key
-  case "$user" in
-    marketspace) secret_key="MARKETSPACE_DB_PASSWORD" ;;
-    recording) secret_key="RECORDING_DB_PASSWORD" ;;
-    sidewinder) secret_key="SIDEWINDER_DB_PASSWORD" ;;
-    *) echo "Unsupported user: $user" >&2; return 1 ;;
-  esac
-
-  aws --profile nuso --region "$region" secretsmanager get-secret-value \
-    --secret-id "marketspace-${env}-portal-api-settings" \
-    --query SecretString --output text | \
-    jq -r --arg key "$secret_key" '.[$key]'
-}
 
 # =============================================================================
 # Zsh-Specific Enhanced Functions
@@ -300,25 +95,25 @@ function weather {
 function nvmrc-create {
   local version="${1:-$(node --version)}"
   echo "$version" > .nvmrc
-  echo "📝 Created .nvmrc with Node $version"
+  echo "Created .nvmrc with Node $version"
 }
 
 # Show current Node version and .nvmrc status
 function node-status {
-  echo "🤖 Current Node version: $(node --version)"
-  echo "📍 NVM default: $(nvm version default)"
+  echo "Current Node version: $(node --version)"
+  echo "NVM default: $(nvm version default)"
 
   if [[ -f .nvmrc ]]; then
     local nvmrc_version=$(cat .nvmrc)
-    echo "📄 .nvmrc specifies: $nvmrc_version"
+    echo ".nvmrc specifies: $nvmrc_version"
 
     if [[ "$(nvm version)" == "$(nvm version "$nvmrc_version")" ]]; then
-      echo "✅ Currently using .nvmrc version"
+      echo "Currently using .nvmrc version"
     else
-      echo "⚠️  Not using .nvmrc version (run 'nvm use' to switch)"
+      echo "Not using .nvmrc version (run 'nvm use' to switch)"
     fi
   else
-    echo "📄 No .nvmrc file in current directory"
+    echo "No .nvmrc file in current directory"
   fi
 }
 
@@ -339,7 +134,7 @@ STARSHIP_CONFIG_DIR="$HOME/.zsh"
 # Function to switch to full prompt (default)
 function prompt-full {
     export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship.toml"
-    echo "🚀 Switched to FULL prompt configuration"
+    echo "Switched to FULL prompt configuration"
     echo "   Features: Time, Git, Languages, Cloud tools, System info"
     # Re-initialize starship with new config
     if command -v starship &> /dev/null; then
@@ -352,7 +147,7 @@ function prompt-full {
 # Function to switch to minimal prompt
 function prompt-minimal {
     export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-minimal.toml"
-    echo "📦 Switched to MINIMAL prompt configuration"
+    echo "Switched to MINIMAL prompt configuration"
     echo "   Features: Hostname, Directory, Basic git info"
     # Re-initialize starship with new config
     if command -v starship &> /dev/null; then
@@ -365,7 +160,7 @@ function prompt-minimal {
 # Function to switch to single-line prompt
 function prompt-single {
     export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-single.toml"
-    echo "➡️  Switched to SINGLE-LINE prompt configuration"
+    echo "Switched to SINGLE-LINE prompt configuration"
     echo "   Features: Directory, Git status on one line"
     # Re-initialize starship with new config
     if command -v starship &> /dev/null; then
@@ -378,7 +173,7 @@ function prompt-single {
 # Function to switch to super minimal prompt
 function prompt-super-minimal {
     export STARSHIP_CONFIG="$STARSHIP_CONFIG_DIR/starship-super-minimal.toml"
-    echo "⚡ Switched to SUPER MINIMAL prompt configuration"
+    echo "Switched to SUPER MINIMAL prompt configuration"
     echo "   Features: Just directory and prompt symbol"
     # Re-initialize starship with new config
     if command -v starship &> /dev/null; then
@@ -391,7 +186,7 @@ function prompt-super-minimal {
 # Function to reset to default configuration
 function prompt-reset {
     unset STARSHIP_CONFIG
-    echo "🔄 Reset to DEFAULT Starship configuration"
+    echo "Reset to DEFAULT Starship configuration"
     echo "   Using: ~/.config/starship.toml (if exists) or built-in defaults"
     # Re-initialize starship with new config
     if command -v starship &> /dev/null; then
@@ -405,28 +200,28 @@ function prompt-reset {
 function prompt-status {
     echo "Current Starship configuration:"
     if [[ -n "$STARSHIP_CONFIG" ]]; then
-        echo "  📁 Config file: $STARSHIP_CONFIG"
+        echo "  Config file: $STARSHIP_CONFIG"
         local config_name=$(basename "$STARSHIP_CONFIG" .toml)
         case "$config_name" in
             "starship")
-                echo "  🚀 Mode: FULL (default dotfiles config)"
+                echo "  Mode: FULL (default dotfiles config)"
                 ;;
             "starship-minimal")
-                echo "  📦 Mode: MINIMAL"
+                echo "  Mode: MINIMAL"
                 ;;
             "starship-single")
-                echo "  ➡️  Mode: SINGLE-LINE"
+                echo "  Mode: SINGLE-LINE"
                 ;;
             "starship-super-minimal")
-                echo "  ⚡ Mode: SUPER MINIMAL"
+                echo "  Mode: SUPER MINIMAL"
                 ;;
             *)
-                echo "  ❓ Mode: CUSTOM ($config_name)"
+                echo "  Mode: CUSTOM ($config_name)"
                 ;;
         esac
     else
-        echo "  🔄 Using default Starship configuration"
-        echo "  📁 Config file: ~/.config/starship.toml (if exists) or built-in"
+        echo "  Using default Starship configuration"
+        echo "  Config file: ~/.config/starship.toml (if exists) or built-in"
     fi
 }
 
@@ -434,14 +229,14 @@ function prompt-status {
 function prompt-list {
     echo "Available Starship prompt configurations:"
     echo ""
-    echo "🚀 prompt-full          - Full-featured prompt (time, git, languages, etc.)"
-    echo "📦 prompt-minimal       - Minimal prompt (hostname, directory, basic git)"
-    echo "➡️  prompt-single        - Single-line prompt (directory and git only)"
-    echo "⚡ prompt-super-minimal - Super minimal (directory and prompt symbol only)"
-    echo "🔄 prompt-reset         - Reset to default Starship configuration"
+    echo "prompt-full          - Full-featured prompt (time, git, languages, etc.)"
+    echo "prompt-minimal       - Minimal prompt (hostname, directory, basic git)"
+    echo "prompt-single        - Single-line prompt (directory and git only)"
+    echo "prompt-super-minimal - Super minimal (directory and prompt symbol only)"
+    echo "prompt-reset         - Reset to default Starship configuration"
     echo ""
-    echo "ℹ️  prompt-status        - Show current configuration"
-    echo "📋 prompt-list          - Show this list"
+    echo "prompt-status        - Show current configuration"
+    echo "prompt-list          - Show this list"
 }
 
 # =============================================================================
@@ -487,5 +282,3 @@ function ensure_history_loaded {
     fi
   fi
 }
-
-

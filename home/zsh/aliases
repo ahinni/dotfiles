@@ -205,6 +205,10 @@ alias fix-history='ensure_history_loaded && echo "History loading attempted. Cur
 alias portaldb-dev-us1='PGPASSWORD=$(dbpass dev marketspace us1) psql postgres://marketspace@marketspace-dev-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
 alias portaldb-dev-eu1='PGPASSWORD=$(dbpass dev marketspace eu1) psql postgres://marketspace@marketspace-dev-eu1-db1.cluster-cbyuiybwaltq.eu-central-1.rds.amazonaws.com/marketspace'
 
+# RDS Portal Dev DBs (Admin/Postgres superuser)
+alias portaldb-dev-us1-admin='PGPASSWORD=$(dbpass dev postgres us1) psql postgres://postgres@marketspace-dev-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/postgres'
+alias portaldb-dev-eu1-admin='PGPASSWORD=$(dbpass dev postgres eu1) psql postgres://postgres@marketspace-dev-eu1-db1.cluster-cbyuiybwaltq.eu-central-1.rds.amazonaws.com/postgres'
+
 # RDS Portal Staging DBs
 alias portaldb-staging-us1='PGPASSWORD=$(dbpass staging marketspace us1) psql postgres://marketspace@marketspace-staging-db1.cluster-c943yd04ryku.us-west-2.rds.amazonaws.com/marketspace'
 

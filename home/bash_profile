@@ -8,6 +8,9 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 # Load Modular Configuration Files
 # =============================================================================
 
+# Load shared shell functions (bash/zsh compatible)
+[[ -f ~/.shell/functions ]] && source ~/.shell/functions
+
 # Load bash configuration modules
 [[ -f ~/.bash/paths ]] && source ~/.bash/paths
 [[ -f ~/.bash/work_dirs ]] && source ~/.bash/work_dirs
