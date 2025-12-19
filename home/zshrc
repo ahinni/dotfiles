@@ -55,7 +55,7 @@ source ~/.shell/functions
 source ~/.bash/paths
 
 # Load work directory aliases (shared with bash)
-source ~/.bash/work_dirs
+source ~/.shell/work_dirs
 
 # Load general configuration (zsh-compatible parts only)
 # Note: Skip bash/config as it contains bash-specific commands
